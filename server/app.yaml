@@ -1,0 +1,17 @@
+application: petetweet
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /crossdomain\.xml
+  static_files: crossdomain.xml
+  upload: crossdomain\.xml
+  expiration: "5s"
+
+# General
+- url: /assets
+  static_dir: assets
+
+- url: .*
+  script: main.py
