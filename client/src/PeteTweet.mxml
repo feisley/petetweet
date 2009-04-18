@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.events.FaultEvent;
+			public var gw:NetConnection = new NetConnection();
+			
+			public function getData():void {
+				gw.connect("http://www.petetweet.com/api");
+				gw.call("api.version", new Responder(gotData, gotError));
+			}
+			
+			public function gotData(s:String):void {
+				textArea.text = s;
+			}
+			
+			public function gotError(o:Object):void {
+				textArea.text = "The server returned an error";
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:TextArea id="textArea" x="10" y="10" width="360" height="135" fontSize="18"/>
+	<mx:Button x="10" y="153" label="Get Data" click="getData();"/>
+</mx:Application>
