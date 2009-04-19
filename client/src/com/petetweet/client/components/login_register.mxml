@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="362" height="248"
+	creationComplete="init();">
+
+	<mx:Script>
+		<![CDATA[
+			import com.petetweet.client.events.*;
+			
+			public function init():void{
+				this.addEventListener("LoginFailEvent",loginFailure);
+			}
+			
+			public function doButton():void {
+				if(currentState == 'Register'){
+					doRegister();
+				}
+				else{
+					doLogin();
+				}
+			}
+			
+			public function doLogin():void {
+				var username:String = txt_username.text;
+				var password:String = txt_password.text;
+				dispatchEvent(new LoginEvent(username,password));
+				//trace("Login: U="+username+"P="+password);
+			}
+			public function loginFailure(event:LoginFailEvent):void{
+				//TODO: Display login failed somewhere
+				txt_username.text = "Login Failed!";
+			}
+			
+			public function doRegister():void {
+				var username:String = txt_username.text;
+				var password:String = txt_password.text;
+				var cpassword:String = txt_cpassword.text;
+				var firstname:String = txt_firstname.text;
+				var lastname:String = txt_lastname.text;
+				var email:String = txt_email.text;
+				dispatchEvent(new RegisterEvent(username,password,cpassword,firstname,lastname,email));
+				//trace("Register: U="+username+"P="+password+"CP="+cpassword);
+			}
+		]]>
+	</mx:Script>
+
+	<!-- Define one view state, in addition to the base state.-->
+    <mx:states>
+        <mx:State name="Register">
+            <mx:AddChild relativeTo="{loginForm}" position="lastChild">
+                <mx:target>
+                    <mx:FormItem id="confirm" label="Confirm:">
+                        <mx:TextInput id="txt_cpassword"/>
+                    </mx:FormItem>
+                </mx:target>
+            </mx:AddChild>
+            <mx:SetProperty target="{loginPanel}" name="title" value="Register"/>
+            <mx:SetProperty target="{loginButton}" name="label" value="Register"/>
+            <mx:SetStyle target="{loginButton}" 
+                name="color" value="blue"/>
+            <mx:RemoveChild target="{registerLink}"/>
+            <mx:AddChild relativeTo="{spacer1}" position="before">
+                <mx:target>
+                    <mx:LinkButton id="loginLink" label="Return to Login" click="currentState=''"/>
+                </mx:target>
+            </mx:AddChild>
+            <mx:SetProperty name="height" value="356"/>
+            <mx:SetProperty target="{loginForm}" name="height" value="199"/>
+            <mx:AddChild relativeTo="{loginForm}" position="lastChild">
+                <mx:FormItem id="firstname" label="First Name:">
+                    <mx:TextInput id="txt_firstname"/>
+                </mx:FormItem>
+            </mx:AddChild>
+            <mx:AddChild relativeTo="{loginForm}" position="lastChild">
+                <mx:FormItem id="lastname" label="Last Name:">
+                    <mx:TextInput id="txt_lastname"/>
+                </mx:FormItem>
+            </mx:AddChild>
+            <mx:AddChild relativeTo="{loginForm}" position="lastChild">
+                <mx:FormItem id="email" label="Email:">
+                    <mx:TextInput id="txt_email"/>
+                </mx:FormItem>
+            </mx:AddChild>
+            <mx:SetProperty name="width" value="362"/>
+            <mx:SetProperty target="{loginPanel}" name="width" value="362"/>
+            <mx:SetProperty target="{text1}" name="x" value="10"/>
+            <mx:SetProperty target="{text1}" name="y" value="10"/>
+            <mx:SetProperty target="{controlbar1}" name="x" value="0"/>
+            <mx:SetProperty target="{controlbar1}" name="y" value="276"/>
+            <mx:SetProperty target="{loginPanel}" name="layout" value="absolute"/>
+            <mx:SetStyle target="{loginForm}" name="horizontalCenter" value="0"/>
+            <mx:SetProperty target="{loginForm}" name="y" value="48"/>
+            <mx:SetProperty target="{loginForm}" name="width" value="323"/>
+        </mx:State>
+    </mx:states>
+
+    <mx:transitions>
+        <!-- Define the transition from the base state to the Register state.-->
+        <mx:Transition id="toRegister" fromState="*" toState="Register">
+            <mx:Sequence targets="{[loginPanel, registerLink, confirm, loginLink, spacer1]}">
+                <mx:RemoveChildAction/>
+                <mx:SetPropertyAction target="{loginPanel}" name="title"/>
+                <mx:SetPropertyAction target="{loginButton}" name="label"/>
+                <mx:SetStyleAction target="{loginButton}" name="color"/>
+                <mx:Resize target="{loginPanel}"/>
+                <mx:AddChildAction/>
+            </mx:Sequence>
+        </mx:Transition>
+
+        <!-- Define the transition from the Register state to the base state.-->
+        <mx:Transition id="toDefault" fromState="Register" toState="*">
+            <mx:Sequence targets="{[loginPanel, registerLink, 
+                    confirm, loginLink, spacer1]}">
+                <mx:RemoveChildAction/>
+                <mx:SetPropertyAction target="{loginPanel}" name="title"/>
+                <mx:SetPropertyAction  target="{loginButton}" name="label"/>
+                <mx:SetStyleAction target="{loginButton}" name="color"/>
+                <mx:Resize target="{loginPanel}"/>
+                <mx:AddChildAction/>
+            </mx:Sequence>
+        </mx:Transition>
+	</mx:transitions>
+
+    <!-- Define a Panel container that defines the login form.-->
+    <mx:Panel title="Login" id="loginPanel" 
+        horizontalScrollPolicy="off" verticalScrollPolicy="off"
+        paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10" width="362" layout="absolute">
+	
+        <mx:Text width="100%" color="blue"
+            text="Click the 'Need to Register?' link to change state. Click the 'Return to Login' link to return to the base state." id="text1" x="10" y="10"/>
+
+        <mx:Form id="loginForm" y="46" horizontalCenter="0" width="321">
+            <mx:FormItem label="Username:">
+                <mx:TextInput id="txt_username"/>
+            </mx:FormItem>
+            <mx:FormItem label="Password:">
+                <mx:TextInput id="txt_password"/>
+            </mx:FormItem>
+        </mx:Form>
+        <mx:ControlBar id="controlbar1" x="0" y="170">
+            <mx:LinkButton id="registerLink"  label="Need to Register?"
+                click="currentState='Register'"/>
+            <mx:Spacer width="100%" id="spacer1"/>
+            <mx:Button label="Login" id="loginButton" click="doButton();"/>
+        </mx:ControlBar>
+    </mx:Panel>
+</mx:Canvas>
