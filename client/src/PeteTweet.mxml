@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" xmlns:ns1="com.petetweet.client.components.*"
 	creationComplete="init();">
+	<mx:Script source="com/petetweet/client/scripts/ConstantVariables.as" />
 	<mx:Script>
 		<![CDATA[
 			import com.petetweet.client.events.*;
@@ -21,7 +22,7 @@
 			public function processLogin(username:String,password:String):void{
 				//TODO: error check username and password
 							
-				gw.call("petetweet.login", new Responder(loginPass, loginFail),username,password);
+				gw.call(API_LOGIN, new Responder(loginPass, loginFail),username,password);
 			}
 			public function loginPass(userid:int):void{
 				viewstack1.selectedIndex = 1;
@@ -40,28 +41,16 @@
 											firstname:String,lastname:String,email:String):void{
 				//TODO: error check: all fields complete, passwords and cpassword match
 							
-				gw.call("petetweet.register", new Responder(registerPass, registerFail),username,password,firstname,lastname,email);
+				gw.call(API_REGISTER, new Responder(registerPass, registerFail),username,password,firstname,lastname,email);
 			}
-			public function registerPass():void{
-							
+			public function registerPass(o:Object):void{
+				//TODO: login perhaps? or make the user login w/ new user/pass combo, change o:Object to correct param			
 			}
-			public function registerFail():void{
-							
+			public function registerFail(o:Object):void{
+				loginForm.dispatchEvent(new RegisterFailEvent());			
 			}
 			//-----------------END REGISTER FUNCTIONS-------------------------------
 			
-			public function getData():void {
-				gw.connect("http://www.petetweet.com/api");
-				gw.call("api.version", new Responder(gotData, gotError));
-			}
-			
-			public function gotData(s:String):void {
-				textArea.text = s;
-			}
-			
-			public function gotError(o:Object):void {
-				textArea.text = "The server returned an error";
-			}
 			
 		]]>
 	</mx:Script>
@@ -70,9 +59,13 @@
 			<ns1:login_register horizontalCenter="0" verticalCenter="-6" id="loginForm">
 			</ns1:login_register>
 		</mx:Canvas>
-		<mx:Canvas label="first" width="100%" height="100%">
-			<mx:TextArea id="textArea" x="10" y="39" width="360" height="135" fontSize="18"/>
-			<mx:Button x="84" y="264" label="Get Data" click="getData();" id="button1"/>
+		<mx:Canvas label="main" width="100%" height="100%">
+			<mx:RichTextEditor y="21" title="What would you like to be doing?" width="398" height="151" x="290" id="txt_tweetInput">
+			</mx:RichTextEditor>
+			<mx:Button x="407" y="214" label="View Profile" id="btn_viewProfile" click="viewstack1.selectedIndex = 2;"/>
+		</mx:Canvas>
+		<mx:Canvas label="profile" width="100%" height="100%">
+			<mx:Button x="297" y="130" label="Save and Return" id="btn_returnFromProfile" click="viewstack1.selectedIndex = 1;"/>
 		</mx:Canvas>
 		
 	</mx:ViewStack>

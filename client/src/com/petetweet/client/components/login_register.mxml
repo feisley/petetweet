@@ -8,6 +8,7 @@
 			
 			public function init():void{
 				this.addEventListener("LoginFailEvent",loginFailure);
+				this.addEventListener("RegisterFailEvent",registerFailure);
 			}
 			
 			public function doButton():void {
@@ -39,6 +40,10 @@
 				var email:String = txt_email.text;
 				dispatchEvent(new RegisterEvent(username,password,cpassword,firstname,lastname,email));
 				//trace("Register: U="+username+"P="+password+"CP="+cpassword);
+			}
+			public function registerFailure(event:RegisterFailEvent):void{
+				//TODO: Display register failed somewhere
+				txt_username.text = "Register Failed!";
 			}
 		]]>
 	</mx:Script>
