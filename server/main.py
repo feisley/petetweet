@@ -3,7 +3,9 @@ import time
 import wsgiref.handlers
 from google.appengine.ext import webapp
 from pyamf.remoting.gateway.google import WebAppGateway
+
 from petetweet import api
+
 
 class MainPage(webapp.RequestHandler):
     def get(self):
