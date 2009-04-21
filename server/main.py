@@ -19,10 +19,13 @@ services = {
     'api.version': version,
     'petetweet.register': api.register,
     'petetweet.login': api.login,
+    'petetweet.status': api.status,
+    'petetweet.post': api.post,
 }
 
 def main():
-    application_paths = [('/', MainPage), ('/api', WebAppGateway(services))]
+    application_paths = [('/', MainPage),
+        ('/api', WebAppGateway(services))]
     application = webapp.WSGIApplication(application_paths, debug=True)
     wsgiref.handlers.CGIHandler().run(application)
 
