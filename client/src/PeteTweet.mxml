@@ -4,16 +4,56 @@
 	<mx:Script source="com/petetweet/client/scripts/ConstantVariables.as" />
 	<mx:Script>
 		<![CDATA[
+			import mx.collections.ArrayCollection;
 			import com.petetweet.client.events.*;
 			import mx.rpc.events.FaultEvent;
+			import com.adobe.crypto.SHA256;
 			public var gw:NetConnection = new NetConnection();
+			private var tweets:ArrayCollection = new ArrayCollection();
 			
 			public function init():void{
 				gw.connect("http://www.petetweet.com/api");
 				
+				gw.call(API_STATUS, new Responder(statusPass, statusFail));
+			}
+			public function loginFormInit():void{
 				loginForm.addEventListener("LoginEvent",loginHandler);
 				loginForm.addEventListener("RegisterEvent",registerHandler);
 			}
+			public function goToMainPage():void{
+				viewstack1.selectedIndex = 2;
+				gw.call(API_GETALL, new Responder(getAllTweetsPass, getAllTweetsFail));
+			}
+			
+			//--------------------TWEET FUNCTIONS----------------------------------
+			public function getAllTweetsPass(arr:Array):void{
+				tweets.removeAll();
+				for(var obj:Object in arr){
+					trace(obj.toString());
+					tweets.addItem(obj);
+				}
+				trace("Tweet get all passed");
+			}
+			public function getAllTweetsFail(o:Object):void{
+				trace("Tweet get all failed");
+			}
+			
+			//--------------------END TWEET FUNCTIONS----------------------------------
+			
+			//--------------------STATUS FUNCTIONS----------------------------------
+			//TODO:Put this information in a page before the login page
+			public function statusPass(b:Boolean):void{
+				if(b)
+					goToMainPage();
+				else
+					viewstack1.selectedIndex = 1;
+			}
+			public function statusFail(b:Boolean):void{
+				viewstack1.selectedIndex = 1;
+			}
+			
+			//--------------------END STATUS FUNCTIONS----------------------------------
+			
 			//--------------------LOGIN FUNCTIONS----------------------------------
 			public function loginHandler(event:LoginEvent):void{
 				processLogin(event.username, event.password);
@@ -21,14 +61,14 @@
 			}
 			public function processLogin(username:String,password:String):void{
 				//TODO: error check username and password
-							
+				password = SHA256.hash(password);	
 				gw.call(API_LOGIN, new Responder(loginPass, loginFail),username,password);
 			}
 			public function loginPass(userid:int):void{
-				viewstack1.selectedIndex = 1;
+				goToMainPage();
 			}
 			public function loginFail(o:Object):void{
-				loginForm.dispatchEvent(new LoginFailEvent());
+				loginForm.dispatchEvent(new LoginFailEvent(o));
 			}
 			//-----------------END LOGIN FUCTIONS-----------------------------------
 			
@@ -39,34 +79,59 @@
 			}
 			public function processRegister(username:String,password:String,cpassword:String,
 											firstname:String,lastname:String,email:String):void{
-				//TODO: error check: all fields complete, passwords and cpassword match
-							
+				password = SHA256.hash(password);
 				gw.call(API_REGISTER, new Responder(registerPass, registerFail),username,password,firstname,lastname,email);
 			}
 			public function registerPass(o:Object):void{
-				//TODO: login perhaps? or make the user login w/ new user/pass combo, change o:Object to correct param			
+				//TODO: login perhaps? or make the user login w/ new user/pass combo, change o:Object to correct param
+				loginForm.dispatchEvent(new RegisterPassEvent());			
 			}
 			public function registerFail(o:Object):void{
-				loginForm.dispatchEvent(new RegisterFailEvent());			
+				loginForm.dispatchEvent(new RegisterFailEvent(o));			
 			}
 			//-----------------END REGISTER FUNCTIONS-------------------------------
 			
+			//-----------------POST FUNCTIONS-------------------------------
+			public function handlePost():void{
+				var textToSend:String = txt_tweetInput.htmlText;
+				gw.call(API_POST, new Responder(postPass, postFail),textToSend);
+			}
+			public function postPass(o:Object):void{
+				trace("Post Passed");
+			}
+			public function postFail(o:Object):void{
+				trace("Post Failed");
+			}
+			//-----------------END POST FUNCTIONS-------------------------------
 			
 		]]>
 	</mx:Script>
 	<mx:ViewStack id="viewstack1" left="0" right="0" top="0" bottom="0" selectedIndex="0">
+		<mx:Canvas label="loading" width="100%" height="100%">
+			<mx:ProgressBar indeterminate="true" horizontalCenter="0" verticalCenter="0"/>
+		</mx:Canvas>
 		<mx:Canvas label="login" width="100%" height="100%">
-			<ns1:login_register horizontalCenter="0" verticalCenter="-6" id="loginForm">
+			<ns1:login_register horizontalCenter="0" verticalCenter="-6" id="loginForm" creationComplete="loginFormInit();">
 			</ns1:login_register>
 		</mx:Canvas>
-		<mx:Canvas label="main" width="100%" height="100%">
-			<mx:RichTextEditor y="21" title="What would you like to be doing?" width="398" height="151" x="290" id="txt_tweetInput">
-			</mx:RichTextEditor>
-			<mx:Button x="407" y="214" label="View Profile" id="btn_viewProfile" click="viewstack1.selectedIndex = 2;"/>
-		</mx:Canvas>
-		<mx:Canvas label="profile" width="100%" height="100%">
-			<mx:Button x="297" y="130" label="Save and Return" id="btn_returnFromProfile" click="viewstack1.selectedIndex = 1;"/>
-		</mx:Canvas>
-		
+		<mx:Accordion left="0" top="0" bottom="0" right="0">
+			<mx:Canvas label="Home Page" width="100%" height="100%">
+				<mx:RichTextEditor y="10" title="What are you doing?" width="398" height="151" x="299" id="txt_tweetInput">
+				</mx:RichTextEditor>
+				<mx:Button x="618" y="128" label="Post" click="handlePost();"/>
+				<mx:Tile direction="horizontal" borderStyle="inset" 
+		            horizontalGap="10" verticalGap="15"
+		            paddingLeft="10" paddingTop="10" paddingBottom="10" paddingRight="10" width="398" x="299" y="169">
+		            <mx:Repeater id="rp" dataProvider="{tweets}">
+		            	<mx:TextArea width="373" text="{String(rp.currentItem)}"/>
+		            </mx:Repeater>    
+		        </mx:Tile>
+			</mx:Canvas>
+			<mx:Canvas label="Profile" width="100%" height="100%">
+			</mx:Canvas>
+			<mx:Canvas label="Blah" width="100%" height="100%">
+			</mx:Canvas>
+		</mx:Accordion>
 	</mx:ViewStack>
+	
 </mx:Application>

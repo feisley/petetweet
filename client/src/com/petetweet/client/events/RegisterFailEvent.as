@@ -5,13 +5,17 @@ package com.petetweet.client.events
 
 	public class RegisterFailEvent extends Event
 	{
-		public function RegisterFailEvent(bubbles:Boolean=false, cancelable:Boolean=false)
+		public function RegisterFailEvent(error:Object, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super("RegisterFailEvent", bubbles, cancelable);
+			
+			this.error = error;
 		}
 		
+		public var error:Object;
+		
 		override public function clone():Event {
-			return new RegisterFailEvent();
+			return new RegisterFailEvent(error);
 		}
 		
 	}

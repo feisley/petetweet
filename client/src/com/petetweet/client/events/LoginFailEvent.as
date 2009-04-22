@@ -5,13 +5,17 @@ package com.petetweet.client.events
 
 	public class LoginFailEvent extends Event
 	{
-		public function LoginFailEvent(bubbles:Boolean=false, cancelable:Boolean=false)
+		public function LoginFailEvent(error:Object, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super("LoginFailEvent", bubbles, cancelable);
+			
+			this.error = error;
 		}
 		
+		public var error:Object;
+		
 		override public function clone():Event {
-			return new LoginFailEvent();
+			return new LoginFailEvent(error);
 		}
 		
 	}

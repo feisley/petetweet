@@ -9,10 +9,11 @@
 			public function init():void{
 				this.addEventListener("LoginFailEvent",loginFailure);
 				this.addEventListener("RegisterFailEvent",registerFailure);
+				this.addEventListener("RegisterPassEvent",registerPass);
 			}
 			
 			public function doButton():void {
-				if(currentState == 'Register'){
+				if(currentState == 'Register' || currentState == 'RegisterError'){
 					doRegister();
 				}
 				else{
@@ -28,7 +29,8 @@
 			}
 			public function loginFailure(event:LoginFailEvent):void{
 				//TODO: Display login failed somewhere
-				txt_username.text = "Login Failed!";
+				currentState='LoginError';
+				lbl_login_error.text = event.error.description;
 			}
 			
 			public function doRegister():void {
@@ -38,12 +40,24 @@
 				var firstname:String = txt_firstname.text;
 				var lastname:String = txt_lastname.text;
 				var email:String = txt_email.text;
-				dispatchEvent(new RegisterEvent(username,password,cpassword,firstname,lastname,email));
+				if(password == cpassword)
+					dispatchEvent(new RegisterEvent(username,password,cpassword,firstname,lastname,email));
+				else{
+					currentState='RegisterError';
+					lbl_register_error.text = "Your passwords do not match!";
+				}
 				//trace("Register: U="+username+"P="+password+"CP="+cpassword);
 			}
 			public function registerFailure(event:RegisterFailEvent):void{
 				//TODO: Display register failed somewhere
-				txt_username.text = "Register Failed!";
+				currentState='RegisterError';
+				lbl_register_error.text = event.error.description;
+			}
+			public function registerPass(event:RegisterPassEvent):void{
+				currentState='LoginError';
+				txt_username.text = "";
+				txt_password.text = "";
+				lbl_login_error.text = "You have successfully Registered. Please login.";
 			}
 		]]>
 	</mx:Script>
@@ -54,7 +68,7 @@
             <mx:AddChild relativeTo="{loginForm}" position="lastChild">
                 <mx:target>
                     <mx:FormItem id="confirm" label="Confirm:">
-                        <mx:TextInput id="txt_cpassword"/>
+                        <mx:TextInput id="txt_cpassword" displayAsPassword="true"/>
                     </mx:FormItem>
                 </mx:target>
             </mx:AddChild>
@@ -96,6 +110,20 @@
             <mx:SetProperty target="{loginForm}" name="y" value="48"/>
             <mx:SetProperty target="{loginForm}" name="width" value="323"/>
         </mx:State>
+        <mx:State name="LoginError">
+            <mx:AddChild relativeTo="{loginPanel}" position="lastChild">
+                <mx:Text width="321" color="#F30314"
+                    id="lbl_login_error" x="10" y="40"/>
+            </mx:AddChild>
+            <mx:SetProperty target="{loginForm}" name="y" value="65"/>
+        </mx:State>
+        <mx:State name="RegisterError" basedOn="Register">
+            <mx:SetProperty target="{loginForm}" name="y" value="70"/>
+            <mx:AddChild relativeTo="{loginForm}" position="before">
+                <mx:Text width="323" color="#ED020D"
+                    id="lbl_register_error" x="10" y="45"/>
+            </mx:AddChild>
+        </mx:State>
     </mx:states>
 
     <mx:transitions>
@@ -134,11 +162,11 @@
             text="Click the 'Need to Register?' link to change state. Click the 'Return to Login' link to return to the base state." id="text1" x="10" y="10"/>
 
         <mx:Form id="loginForm" y="46" horizontalCenter="0" width="321">
-            <mx:FormItem label="Username:">
+            <mx:FormItem label="Username:" id="formitem1">
                 <mx:TextInput id="txt_username"/>
             </mx:FormItem>
             <mx:FormItem label="Password:">
-                <mx:TextInput id="txt_password"/>
+                <mx:TextInput id="txt_password" displayAsPassword="true"/>
             </mx:FormItem>
         </mx:Form>
         <mx:ControlBar id="controlbar1" x="0" y="170">
