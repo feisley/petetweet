@@ -4,6 +4,7 @@ from appengine_utilities.sessions import Session
 from data import *
 import util
 
+
 def register(username, password, firstname, lastname, email):
     
     q = User.all()
@@ -46,9 +47,11 @@ def login(username, password):
 
 def status():
     s = Session()
-    if s['status'] == True:
-        return True
-    else:
+    try:
+        if s['status'] == True:
+            return True
+        else: raise KeyError
+    except KeyError:
         return False
     
 
@@ -66,6 +69,7 @@ def getusertweets(userid, limit = 10):
     
     q = Tweet.all()
     q.filter("user =", userid)
+    q.order("-post_date")
     
     return q.fetch(limit)
 
@@ -76,6 +80,7 @@ def getalltweets(limit = 10):
         raise ValueError("Limit must be from 1 - 1000")
         
     q = Tweet.all()
+    q.order("-post_date")
     
     return q.fetch(limit)
     
@@ -87,5 +92,6 @@ def gettweets(limit = 10):
     s = Session()
     q = Tweet.all()
     q.filter("user =", s['user'])
+    q.order("-post_date")
     
     return q.fetch(limit)

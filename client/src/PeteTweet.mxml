@@ -9,6 +9,8 @@
 			import mx.rpc.events.FaultEvent;
 			import com.adobe.crypto.SHA256;
 			public var gw:NetConnection = new NetConnection();
+			
+			[Bindable]
 			private var tweets:ArrayCollection = new ArrayCollection();
 			
 			public function init():void{
@@ -16,21 +18,24 @@
 				
 				gw.call(API_STATUS, new Responder(statusPass, statusFail));
 			}
-			public function loginFormInit():void{
+			public function loginFormInit():void {
 				loginForm.addEventListener("LoginEvent",loginHandler);
 				loginForm.addEventListener("RegisterEvent",registerHandler);
 			}
-			public function goToMainPage():void{
+			public function goToMainPage():void {
 				viewstack1.selectedIndex = 2;
+				gw.call(API_GETALL, new Responder(getAllTweetsPass, getAllTweetsFail));
+			}
+			
+			public function updateTweets():void {
 				gw.call(API_GETALL, new Responder(getAllTweetsPass, getAllTweetsFail));
 			}
 			
 			//--------------------TWEET FUNCTIONS----------------------------------
 			public function getAllTweetsPass(arr:Array):void{
 				tweets.removeAll();
-				for(var obj:Object in arr){
-					trace(obj.toString());
-					tweets.addItem(obj);
+				for(var obj:Object in arr) {
+					tweets.addItem(arr[obj]);
 				}
 				trace("Tweet get all passed");
 			}
@@ -42,20 +47,20 @@
 			
 			//--------------------STATUS FUNCTIONS----------------------------------
 			//TODO:Put this information in a page before the login page
-			public function statusPass(b:Boolean):void{
+			public function statusPass(b:Boolean):void {
 				if(b)
 					goToMainPage();
 				else
 					viewstack1.selectedIndex = 1;
 			}
-			public function statusFail(b:Boolean):void{
+			public function statusFail(b:Boolean):void {
 				viewstack1.selectedIndex = 1;
 			}
 			
 			//--------------------END STATUS FUNCTIONS----------------------------------
 			
 			//--------------------LOGIN FUNCTIONS----------------------------------
-			public function loginHandler(event:LoginEvent):void{
+			public function loginHandler(event:LoginEvent):void {
 				processLogin(event.username, event.password);
 				trace("Got login: "+event.username);
 			}
@@ -64,25 +69,25 @@
 				password = SHA256.hash(password);	
 				gw.call(API_LOGIN, new Responder(loginPass, loginFail),username,password);
 			}
-			public function loginPass(userid:int):void{
+			public function loginPass(userid:int):void {
 				goToMainPage();
 			}
-			public function loginFail(o:Object):void{
+			public function loginFail(o:Object):void {
 				loginForm.dispatchEvent(new LoginFailEvent(o));
 			}
 			//-----------------END LOGIN FUCTIONS-----------------------------------
 			
 			//-----------------REGISTER FUNCTIONS-----------------------------------
-			public function registerHandler(event:RegisterEvent):void{
+			public function registerHandler(event:RegisterEvent):void {
 				processRegister(event.username, event.password, event.cpassword, event.firstname,event.lastname, event.email);
 				trace("Got login: "+event.username);
 			}
 			public function processRegister(username:String,password:String,cpassword:String,
-											firstname:String,lastname:String,email:String):void{
+											firstname:String,lastname:String,email:String):void {
 				password = SHA256.hash(password);
 				gw.call(API_REGISTER, new Responder(registerPass, registerFail),username,password,firstname,lastname,email);
 			}
-			public function registerPass(o:Object):void{
+			public function registerPass(o:Object):void {
 				//TODO: login perhaps? or make the user login w/ new user/pass combo, change o:Object to correct param
 				loginForm.dispatchEvent(new RegisterPassEvent());			
 			}
@@ -116,16 +121,25 @@
 		</mx:Canvas>
 		<mx:Accordion left="0" top="0" bottom="0" right="0">
 			<mx:Canvas label="Home Page" width="100%" height="100%">
-				<mx:RichTextEditor y="10" title="What are you doing?" width="398" height="151" x="299" id="txt_tweetInput">
+				<mx:RichTextEditor y="10" title="What are you doing?" width="455" height="213" x="10" id="txt_tweetInput">
 				</mx:RichTextEditor>
-				<mx:Button x="618" y="128" label="Post" click="handlePost();"/>
 				<mx:Tile direction="horizontal" borderStyle="inset" 
 		            horizontalGap="10" verticalGap="15"
-		            paddingLeft="10" paddingTop="10" paddingBottom="10" paddingRight="10" width="398" x="299" y="169">
+		            paddingLeft="10" paddingTop="10" paddingBottom="10" paddingRight="10" width="455" x="10" y="245">
 		            <mx:Repeater id="rp" dataProvider="{tweets}">
-		            	<mx:TextArea width="373" text="{String(rp.currentItem)}"/>
+		            	<mx:Canvas width="430" height="220">
+		            		<mx:TextArea id="tweet" width="410" htmlText="{rp.currentItem.text}" 
+		            			editable="false" height="114" x="10" y="96"/>
+		            		<mx:Image x="10" y="10" width="78" height="78">
+		            			<mx:source>http://feisley.com/wp-content/themes/feisley/timthumb.php?src=http://feisley.com/wp-content/uploads/2009/02/profile.png&amp;h=78&amp;w=78&amp;zc=1&amp;q=100</mx:source>
+		            		</mx:Image>
+		            		<mx:Label x="96" y="10" text="{rp.currentItem.user.username}" width="324" height="37" fontSize="16" fontWeight="bold"/>
+		            		<mx:Label x="96" y="64" text="{rp.currentItem.post_date}" width="324" height="24" fontSize="12"/>
+		            	</mx:Canvas>
 		            </mx:Repeater>    
 		        </mx:Tile>
+		        <mx:Button x="392" y="192" label="Post" click="handlePost();"/>
+				<mx:Button x="313" y="192" label="Refresh" click="updateTweets();"/>
 			</mx:Canvas>
 			<mx:Canvas label="Profile" width="100%" height="100%">
 			</mx:Canvas>

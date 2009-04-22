@@ -2,6 +2,7 @@ import time
 
 import wsgiref.handlers
 from google.appengine.ext import webapp
+
 from pyamf.remoting.gateway.google import WebAppGateway
 
 from petetweet import api
@@ -23,6 +24,9 @@ services = {
     'petetweet.login': api.login,
     'petetweet.status': api.status,
     'petetweet.post': api.post,
+    'petetweet.gettweets': api.gettweets,
+    'petetweet.getusertweets': api.getusertweets,
+    'petetweet.getalltweets': api.getalltweets,
 }
 
 def main():
