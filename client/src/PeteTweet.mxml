@@ -27,10 +27,6 @@
 				gw.call(API_GETALL, new Responder(getAllTweetsPass, getAllTweetsFail));
 			}
 			
-			public function updateTweets():void {
-				gw.call(API_GETALL, new Responder(getAllTweetsPass, getAllTweetsFail));
-			}
-			
 			//--------------------TWEET FUNCTIONS----------------------------------
 			public function getAllTweetsPass(arr:Array):void{
 				tweets.removeAll();
@@ -41,6 +37,9 @@
 			}
 			public function getAllTweetsFail(o:Object):void{
 				trace("Tweet get all failed");
+			}
+			public function updateTweets():void {
+				gw.call(API_GETALL, new Responder(getAllTweetsPass, getAllTweetsFail));
 			}
 			
 			//--------------------END TWEET FUNCTIONS----------------------------------
@@ -103,6 +102,9 @@
 			}
 			public function postPass(o:Object):void{
 				trace("Post Passed");
+				updateTweets();
+				txt_tweetInput.text = "";
+				
 			}
 			public function postFail(o:Object):void{
 				trace("Post Failed");
