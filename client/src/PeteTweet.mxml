@@ -163,9 +163,9 @@
 				<mx:Panel x="10" y="231" width="421" height="149" layout="absolute" title="Search for Tweets">
 				</mx:Panel>
 			</mx:Canvas>
-			<mx:Canvas label="Profile" width="100%" height="100%">
+			<mx:Canvas label="Messaging" width="100%" height="100%">
 			</mx:Canvas>
-			<mx:Canvas label="Blah" width="100%" height="100%">
+			<mx:Canvas label="Profile" width="100%" height="100%">
 			</mx:Canvas>
 		</mx:Accordion>
 	</mx:ViewStack>
