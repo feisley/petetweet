@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" xmlns:ns1="com.petetweet.client.components.*"
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" xmlns:petetweet="com.petetweet.client.components.*"
 	creationComplete="init();">
 	<mx:Script source="com/petetweet/client/scripts/ConstantVariables.as" />
 	<mx:Script>
@@ -8,13 +8,14 @@
 			import com.petetweet.client.events.*;
 			import mx.rpc.events.FaultEvent;
 			import com.adobe.crypto.SHA256;
+			import com.adobe.crypto.MD5;
 			public var gw:NetConnection = new NetConnection();
 			
 			[Bindable]
 			private var tweets:ArrayCollection = new ArrayCollection();
 			
 			public function init():void{
-				gw.connect("http://www.petetweet.com/api");
+				gw.connect("https://petetweet.appspot.com/api");
 				
 				gw.call(API_STATUS, new Responder(statusPass, statusFail));
 			}
@@ -111,6 +112,28 @@
 			}
 			//-----------------END POST FUNCTIONS-------------------------------
 			
+
+			private function updateHeight(target:Object):void
+			{
+				target.validateNow();
+				target.height = target.textHeight + 5;
+				target.validateSize();
+			}
+			
+			[Bindable]
+			private function gravatarUrl(email:String):String {
+				
+				"http://www.gravatar.com/avatar/917fb9355a5d0593f86472f7fb61df41?s=60&d=identicon&r=G"
+				
+				var gid:String = MD5.hash(email);
+				var url:String = "http://www.gravatar.com/avatar/" + gid + "?s=70&d=identicon&r=G";
+				
+				trace(url);
+				return url;
+			}
+
+
+			
 		]]>
 	</mx:Script>
 	<mx:ViewStack id="viewstack1" left="0" right="0" top="0" bottom="0" selectedIndex="0">
@@ -118,30 +141,27 @@
 			<mx:ProgressBar indeterminate="true" horizontalCenter="0" verticalCenter="0"/>
 		</mx:Canvas>
 		<mx:Canvas label="login" width="100%" height="100%">
-			<ns1:login_register horizontalCenter="0" verticalCenter="-6" id="loginForm" creationComplete="loginFormInit();">
-			</ns1:login_register>
+			<petetweet:login_register horizontalCenter="0" verticalCenter="-6" id="loginForm" creationComplete="loginFormInit();">
+			</petetweet:login_register>
 		</mx:Canvas>
 		<mx:Accordion left="0" top="0" bottom="0" right="0">
 			<mx:Canvas label="Home Page" width="100%" height="100%">
-				<mx:RichTextEditor y="10" title="What are you doing?" width="455" height="213" x="10" id="txt_tweetInput">
+				<mx:RichTextEditor y="10" title="What are you doing?" width="421" height="213" x="10" id="txt_tweetInput">
 				</mx:RichTextEditor>
-				<mx:Tile direction="horizontal" borderStyle="inset" 
-		            horizontalGap="10" verticalGap="15"
-		            paddingLeft="10" paddingTop="10" paddingBottom="10" paddingRight="10" width="455" x="10" y="245">
-		            <mx:Repeater id="rp" dataProvider="{tweets}">
-		            	<mx:Canvas width="430" height="220">
-		            		<mx:TextArea id="tweet" width="410" htmlText="{rp.currentItem.text}" 
-		            			editable="false" height="114" x="10" y="96"/>
-		            		<mx:Image x="10" y="10" width="78" height="78">
-		            			<mx:source>http://feisley.com/wp-content/themes/feisley/timthumb.php?src=http://feisley.com/wp-content/uploads/2009/02/profile.png&amp;h=78&amp;w=78&amp;zc=1&amp;q=100</mx:source>
-		            		</mx:Image>
-		            		<mx:Label x="96" y="10" text="{rp.currentItem.user.username}" width="324" height="37" fontSize="16" fontWeight="bold"/>
-		            		<mx:Label x="96" y="64" text="{rp.currentItem.post_date}" width="324" height="24" fontSize="12"/>
-		            	</mx:Canvas>
-		            </mx:Repeater>    
-		        </mx:Tile>
-		        <mx:Button x="392" y="192" label="Post" click="handlePost();"/>
-				<mx:Button x="313" y="192" label="Refresh" click="updateTweets();"/>
+		        <mx:Button x="364" y="192" label="Post" click="handlePost();"/>
+				<mx:Button x="285" y="192" label="Refresh" click="updateTweets();"/>
+
+				<mx:List dataProvider="{tweets}" variableRowHeight="true" right="10" left="439" top="10" bottom="10">
+					<mx:itemRenderer>
+						<mx:Component>
+							<petetweet:TweetRenderer>
+								
+							</petetweet:TweetRenderer>
+		            	</mx:Component>
+					</mx:itemRenderer>
+				</mx:List>
+				<mx:Panel x="10" y="231" width="421" height="149" layout="absolute" title="Search for Tweets">
+				</mx:Panel>
 			</mx:Canvas>
 			<mx:Canvas label="Profile" width="100%" height="100%">
 			</mx:Canvas>

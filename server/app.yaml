@@ -8,10 +8,16 @@ handlers:
   static_files: crossdomain.xml
   upload: crossdomain\.xml
   expiration: "5s"
+  secure: optional
 
 # General
 - url: /assets
   static_dir: assets
 
+- url: /
+  static_files: index.html
+  upload: index\.html
+
 - url: .*
   script: main.py
+  secure: optional
