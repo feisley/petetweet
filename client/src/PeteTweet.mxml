@@ -140,7 +140,7 @@
 			public function customizeEditor():void {
 				tweetEditor.toolbar.removeChild(tweetEditor.bulletButton);
 				tweetEditor.toolbar.removeChild(tweetEditor.alignButtons);
-				
+				tweetEditor.textArea.addEventListener(TextEvent.TEXT_INPUT, gotText);
 				tweetEditor.textArea.maxChars = 256
 				tweetEditor.fontSizeArray = new Array("10", "16", "20");
 				//tweetEditor.removeChild(tweetEditor.bulletButton);
@@ -150,6 +150,24 @@
 			private function updateCount():void {
 				remainingChars.text = String(256 - tweetEditor.textArea.length);
 			}
+			
+			private function getUserTweets():void {
+         		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), searchGrid.selectedItem);
+            }
+            
+            private function gotUserTweets(arr:Array):void {
+            	searchTweets = new ArrayCollection(arr);
+            }
+            
+            private function gotText(evt:TextEvent):void {
+            	if (evt.text == "\n") {
+					var a:Array = tweetEditor.htmlText.split("</P>", 256);
+					if (a.length > 10) {
+						evt.preventDefault();
+					}
+            	}
+            }
+
 
 
 			
@@ -176,13 +194,15 @@
 				<mx:Panel x="10" width="421" layout="absolute" title="Search" bottom="10" top="231">
 					<mx:TextInput y="10" left="10" right="83" id="searchForm"/>
 					<mx:Button y="10" label="Search" right="10" click="doSearch();"/>
-					<mx:DataGrid id="searchGrid" left="10" right="10" top="40" bottom="10" dataProvider="{searchResults}">
+					<mx:DataGrid id="searchGrid" left="10" right="10" top="40" bottom="39" dataProvider="{searchResults}">
 						<mx:columns>
 							<mx:DataGridColumn headerText="Username" dataField="username"/>
 							<mx:DataGridColumn headerText="First Name" dataField="firstname"/>
 							<mx:DataGridColumn headerText="Last Name" dataField="lastname"/>
 						</mx:columns>
 					</mx:DataGrid>
+					<mx:Button label="View User's Tweets" click="getUserTweets();" bottom="10" right="10"/>
+					<mx:Button label="Clear Results" click="searchResults.removeAll();" bottom="10" left="10"/>
 				</mx:Panel>
 				<mx:TabNavigator bottom="10" top="10" right="10" left="439">
 					<mx:Canvas label="Public Timeline" width="100%" height="100%">
@@ -229,7 +249,7 @@
 			<mx:Canvas label="Help" width="100%" height="100%">
 			</mx:Canvas>
 		</mx:ViewStack>
-		<mx:ApplicationControlBar x="0" y="0" width="1160" height="38">
+		<mx:ApplicationControlBar y="0" height="38" right="0" left="0" dock="true">
 			<mx:Label text="PeteTweet" fontSize="20"/>
 			<mx:Spacer width="30"/>
 			<mx:ToggleButtonBar dataProvider="appStack">
