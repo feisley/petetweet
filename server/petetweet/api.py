@@ -45,6 +45,10 @@ def login(username, password):
         raise ValueError("Invalid username or password")
         
 
+def logout():
+    s = Session()
+    s.delete();
+
 def status():
     s = Session()
     try:

@@ -42,6 +42,7 @@
 				gw.connect("http://www.petetweet.com/api");
 				
 				gw.call(API_STATUS, new Responder(statusPass, statusFail));
+				gw.call(API_GETALL, new Responder(gotPublicTweets, gotTweetFault));
 			}
 			public function loginFormInit():void {
 				loginForm.addEventListener("LoginEvent",loginHandler);
@@ -55,6 +56,19 @@
 			
 			public function gotProfile(p:Object):void {
 				userProfile = p;
+			}
+			
+			public function doLogout():void {
+				gw.call("petetweet.logout", new Responder(gotLogout, gotLogoutFault))
+			}
+			
+			public function gotLogout(o:Object):void {
+				viewstack1.selectedIndex = 0;
+				gw.call(API_STATUS, new Responder(statusPass, statusFail));
+			}
+			
+			public function gotLogoutFault(o:Object):void {
+				
 			}
 			
 			//--------------------TWEET FUNCTIONS----------------------------------
@@ -212,8 +226,20 @@
 			<mx:Label text="Welcome to PeteTweet!" verticalCenter="-66" fontSize="36" horizontalCenter="0"/>
 		</mx:Canvas>
 		<mx:Canvas label="login" width="100%" height="100%">
-			<petetweet:login_register horizontalCenter="0" verticalCenter="-6" id="loginForm" creationComplete="loginFormInit();">
+			<petetweet:login_register id="loginForm" creationComplete="loginFormInit();" left="10" top="10">
 			</petetweet:login_register>
+			<mx:Panel layout="absolute" title="Here is what's happening on PeteTweet" right="10" left="380" top="10" bottom="10">
+				<mx:List dataProvider="{publicTweets}" variableRowHeight="true" right="0" left="0" top="0" bottom="0">
+					<mx:itemRenderer>
+						<mx:Component>
+							<petetweet:PublicTweetRenderer>
+								
+							</petetweet:PublicTweetRenderer>
+						        	</mx:Component>
+					</mx:itemRenderer>
+				</mx:List>
+			</mx:Panel>
+			<mx:Label text="PeteTweet" fontSize="36" bottom="10" left="10"/>
 		</mx:Canvas>
 		<mx:Canvas label="loading" width="100%" height="50%">
 		
@@ -309,6 +335,8 @@
 			<mx:Spacer width="30"/>
 			<mx:ToggleButtonBar dataProvider="appStack">
 			</mx:ToggleButtonBar>
+			<mx:Spacer width="30"/>
+			<mx:Button label="Logout" click="doLogout();"/>
 		</mx:ApplicationControlBar>
 		</mx:Canvas>
 	</mx:ViewStack>

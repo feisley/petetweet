@@ -24,6 +24,7 @@
 			public function doLogin():void {
 				var username:String = txt_username.text;
 				var password:String = txt_password.text;
+				txt_password.text = "";
 				dispatchEvent(new LoginEvent(username,password));
 				//trace("Login: U="+username+"P="+password);
 			}
@@ -107,8 +108,7 @@
             <mx:SetProperty target="{controlbar1}" name="y" value="276"/>
             <mx:SetProperty target="{loginPanel}" name="layout" value="absolute"/>
             <mx:SetStyle target="{loginForm}" name="horizontalCenter" value="0"/>
-            <mx:SetProperty target="{loginForm}" name="y" value="48"/>
-            <mx:SetProperty target="{loginForm}" name="width" value="323"/>
+            <mx:SetProperty target="{loginForm}" name="width" value="320"/>
         </mx:State>
         <mx:State name="LoginError">
             <mx:AddChild relativeTo="{loginPanel}" position="lastChild">
@@ -116,6 +116,7 @@
                     id="lbl_login_error" x="10" y="40"/>
             </mx:AddChild>
             <mx:SetProperty target="{loginForm}" name="y" value="65"/>
+            <mx:SetProperty target="{loginForm}" name="width" value="320"/>
         </mx:State>
         <mx:State name="RegisterError" basedOn="Register">
             <mx:SetProperty target="{loginForm}" name="y" value="70"/>
@@ -158,10 +159,10 @@
         horizontalScrollPolicy="off" verticalScrollPolicy="off"
         paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10" width="362" layout="absolute">
 	
-        <mx:Text width="100%" color="blue"
-            text="Click the 'Need to Register?' link to change state. Click the 'Return to Login' link to return to the base state." id="text1" x="10" y="10"/>
+        <mx:Text width="322" color="blue"
+            text="Welcome to PeteTweet. Please login below. If you do not have an account click &quot;Need to Register?&quot; below." id="text1" x="10" y="10"/>
 
-        <mx:Form id="loginForm" y="46" horizontalCenter="0" width="321">
+        <mx:Form id="loginForm" y="46" horizontalCenter="0" width="320">
             <mx:FormItem label="Username:" id="formitem1">
                 <mx:TextInput id="txt_username"/>
             </mx:FormItem>

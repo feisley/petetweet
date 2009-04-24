@@ -22,6 +22,7 @@ services = {
     'api.version': version,
     'petetweet.register': api.register,
     'petetweet.login': api.login,
+    'petetweet.logout': api.logout,
     'petetweet.status': api.status,
     'petetweet.post': api.post,
     'petetweet.gettweets': api.gettweets,
