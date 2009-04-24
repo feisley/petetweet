@@ -32,6 +32,8 @@
 			[Bindable]
 			private var searchTweets:ArrayCollection = new ArrayCollection();
 			
+			[Bindable]
+			private var userProfile:Object = new Object();
 			
 			[Bindable]
 			public var searchResults:ArrayCollection = new ArrayCollection();
@@ -48,6 +50,11 @@
 			public function goToMainPage():void {
 				viewstack1.selectedIndex = 2;
 				updateTweets();
+				gw.call("petetweet.profile", new Responder(gotProfile, gotTweetFault))
+			}
+			
+			public function gotProfile(p:Object):void {
+				userProfile = p;
 			}
 			
 			//--------------------TWEET FUNCTIONS----------------------------------
@@ -180,6 +187,19 @@
 					}
             	}
             }
+            
+            private function gravatarUrl(email:String, size:int):String {
+				
+				"http://www.gravatar.com/avatar/917fb9355a5d0593f86472f7fb61df41?s=60&d=identicon&r=G"
+				if (email.length == 0) {
+					email = "nothing"
+				}
+				var gid:String = MD5.hash(email);
+				var url:String = "http://www.gravatar.com/avatar/" + gid + "?s="+ size +"&d=identicon&r=G";
+				
+				trace(url);
+				return url;
+			}
 
 
 
@@ -258,6 +278,28 @@
 			<mx:Canvas label="Messaging" width="100%" height="100%">
 			</mx:Canvas>
 			<mx:Canvas label="Profile" width="100%" height="100%">
+				<mx:Panel width="365" layout="absolute" title="Profile Editor" top="10" bottom="10" left="10">
+					<mx:Label x="10" y="18" text="Howdy, " fontSize="19"/>
+					<mx:Label x="89" y="18" text="{userProfile.firstname}" fontSize="19" width="148" truncateToFit="true"/>
+					<mx:Image x="243" y="10" width="90" height="90" source="{gravatarUrl(userProfile.email, 90)}"/>
+					<mx:Label x="10" y="114" text="First Name:"/>
+					<mx:Label x="10" y="114" text="First Name:"/>
+					<mx:Label x="10" y="328" text="Password:"/>
+					<mx:Label x="10" y="384" text="Confirm:"/>
+					<mx:Label x="10" y="252" text="Email Address:"/>
+					<mx:Label x="10" y="170" text="Last Name:"/>
+					<mx:TextInput x="10" y="354" width="242"/>
+					<mx:TextInput x="10" y="140" width="242" text="{userProfile.firstname}"/>
+					<mx:TextInput x="10" y="410" width="242"/>
+					<mx:TextInput x="10" y="278" width="242" text="{userProfile.email}"/>
+					<mx:TextInput x="10" y="196" width="242" text="{userProfile.lastname}"/>
+					<mx:Button x="89" label="Reset" bottom="10"/>
+					<mx:Button x="180" label="Change!" bottom="10"/>
+					<mx:LinkButton x="228" y="106" label="(Get a Gravatar)" 
+						click="var u:URLRequest = new URLRequest('http://gravatar.com'); navigateToURL(u,'_blank'); "/>
+					<mx:Label x="10" y="55" text="You have been a memeber since:"/>
+					<mx:Label x="10" y="73" text="{userProfile.reg_date}" width="216" fontStyle="italic"/>
+				</mx:Panel>
 			</mx:Canvas>
 			<mx:Canvas label="Help" width="100%" height="100%">
 			</mx:Canvas>

@@ -120,5 +120,14 @@ def search(str):
     f = r1.union(r2.union(r3))
     
     return f;
+
+def profile():
+    if status:
+        s = Session();
+        q = User.all()
+        q.filter("__key__ =", s["user"])
+        
+        return q.get()
+    
     
     
