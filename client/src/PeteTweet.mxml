@@ -2,20 +2,6 @@
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" xmlns:petetweet="com.petetweet.client.components.*"
 	creationComplete="init();">
 	<mx:Script source="com/petetweet/client/scripts/ConstantVariables.as" />
-	<mx:Style>
-        RichTextEditor
-		{
-		textAreaStyleName: ‘rteStyle’;
-		}
-		
-		.rteStyle
-		{
-		font-size:16;
-		font-family:Verdana;
-		color:#000000;
-		}
-    </mx:Style>
-
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
@@ -26,23 +12,12 @@
 			public var gw:NetConnection = new NetConnection();
 			
 			[Bindable]
-			private var publicTweets:ArrayCollection = new ArrayCollection();
-			[Bindable]
-			private var myTweets:ArrayCollection = new ArrayCollection();
-			[Bindable]
-			private var searchTweets:ArrayCollection = new ArrayCollection();
-			
-			[Bindable]
-			private var userProfile:Object = new Object();
-			
-			[Bindable]
-			public var searchResults:ArrayCollection = new ArrayCollection();
+			private var tweets:ArrayCollection = new ArrayCollection();
 			
 			public function init():void{
-				gw.connect("http://www.petetweet.com/api");
+				gw.connect("https://petetweet.appspot.com/api");
 				
 				gw.call(API_STATUS, new Responder(statusPass, statusFail));
-				gw.call(API_GETALL, new Responder(gotPublicTweets, gotTweetFault));
 			}
 			public function loginFormInit():void {
 				loginForm.addEventListener("LoginEvent",loginHandler);
@@ -50,42 +25,22 @@
 			}
 			public function goToMainPage():void {
 				viewstack1.selectedIndex = 2;
-				updateTweets();
-				gw.call("petetweet.profile", new Responder(gotProfile, gotTweetFault))
-			}
-			
-			public function gotProfile(p:Object):void {
-				userProfile = p;
-			}
-			
-			public function doLogout():void {
-				gw.call("petetweet.logout", new Responder(gotLogout, gotLogoutFault))
-			}
-			
-			public function gotLogout(o:Object):void {
-				viewstack1.selectedIndex = 0;
-				gw.call(API_STATUS, new Responder(statusPass, statusFail));
-			}
-			
-			public function gotLogoutFault(o:Object):void {
-				
+				gw.call(API_GETALL, new Responder(getAllTweetsPass, getAllTweetsFail));
 			}
 			
 			//--------------------TWEET FUNCTIONS----------------------------------
-			public function gotPublicTweets(arr:Array):void {
-				publicTweets = new ArrayCollection(arr);
+			public function getAllTweetsPass(arr:Array):void{
+				tweets.removeAll();
+				for(var obj:Object in arr) {
+					tweets.addItem(arr[obj]);
+				}
 				trace("Tweet get all passed");
 			}
-			
-			public function gotMyTweets(arr:Array):void {
-				myTweets = new ArrayCollection(arr);
-			}
-			public function gotTweetFault(o:Object):void{
+			public function getAllTweetsFail(o:Object):void{
 				trace("Tweet get all failed");
 			}
 			public function updateTweets():void {
-				gw.call(API_GETALL, new Responder(gotPublicTweets, gotTweetFault));
-				gw.call("petetweet.gettweets", new Responder(gotMyTweets, gotTweetFault));
+				gw.call(API_GETALL, new Responder(getAllTweetsPass, getAllTweetsFail));
 			}
 			
 			//--------------------END TWEET FUNCTIONS----------------------------------
@@ -143,13 +98,13 @@
 			
 			//-----------------POST FUNCTIONS-------------------------------
 			public function handlePost():void{
-				var textToSend:String = tweetEditor.htmlText;
+				var textToSend:String = txt_tweetInput.htmlText;
 				gw.call(API_POST, new Responder(postPass, postFail),textToSend);
 			}
 			public function postPass(o:Object):void{
 				trace("Post Passed");
 				updateTweets();
-				tweetEditor.text = "";
+				txt_tweetInput.text = "";
 				
 			}
 			public function postFail(o:Object):void{
@@ -157,64 +112,25 @@
 			}
 			//-----------------END POST FUNCTIONS-------------------------------
 			
-			//-----------------SEARCH FUNCTIONS-------------------------------
-			public function doSearch():void{
-				var searchString:String = searchForm.text;
-				gw.call("petetweet.search", new Responder(gotSearchResults, gotSearchFault), searchString);
-			}
-			public function gotSearchResults(arr:Array):void{
-				trace("Post Passed");
-				searchResults = new ArrayCollection(arr);
-				
-			}
-			public function gotSearchFault(o:Object):void{
-				trace("Post Failed");
-			}
-			//-----------------END SEARCH FUNCTIONS-------------------------------
-			
-			public function customizeEditor():void {
-				tweetEditor.toolbar.removeChild(tweetEditor.bulletButton);
-				tweetEditor.toolbar.removeChild(tweetEditor.alignButtons);
-				tweetEditor.textArea.addEventListener(TextEvent.TEXT_INPUT, gotText);
-				tweetEditor.textArea.maxChars = 256
-				tweetEditor.fontSizeArray = new Array("16", "20");
-				
+
+			private function updateHeight(target:Object):void
+			{
+				target.validateNow();
+				target.height = target.textHeight + 5;
+				target.validateSize();
 			}
 			
-			private function updateCount():void {
-				remainingChars.text = String(256 - tweetEditor.textArea.length);
-			}
-			
-			private function getUserTweets():void {
-         		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), searchGrid.selectedItem);
-            }
-            
-            private function gotUserTweets(arr:Array):void {
-            	searchTweets = new ArrayCollection(arr);
-            }
-            
-            private function gotText(evt:TextEvent):void {
-            	if (evt.text == "\n") {
-					var a:Array = tweetEditor.htmlText.split("</P>", 256);
-					if (a.length > 10) {
-						evt.preventDefault();
-					}
-            	}
-            }
-            
-            private function gravatarUrl(email:String, size:int):String {
+			[Bindable]
+			private function gravatarUrl(email:String):String {
 				
 				"http://www.gravatar.com/avatar/917fb9355a5d0593f86472f7fb61df41?s=60&d=identicon&r=G"
-				if (email.length == 0) {
-					email = "nothing"
-				}
+				
 				var gid:String = MD5.hash(email);
-				var url:String = "http://www.gravatar.com/avatar/" + gid + "?s="+ size +"&d=identicon&r=G";
+				var url:String = "http://www.gravatar.com/avatar/" + gid + "?s=70&d=identicon&r=G";
 				
 				trace(url);
 				return url;
 			}
-
 
 
 			
@@ -222,123 +138,61 @@
 	</mx:Script>
 	<mx:ViewStack id="viewstack1" left="0" right="0" top="0" bottom="0" selectedIndex="0">
 		<mx:Canvas label="loading" width="100%" height="100%">
-			<mx:ProgressBar indeterminate="true" horizontalCenter="0" verticalCenter="0" labelPlacement="center" width="320" height="18"/>
-			<mx:Label text="Welcome to PeteTweet!" verticalCenter="-66" fontSize="36" horizontalCenter="0"/>
+			<mx:ProgressBar indeterminate="true" horizontalCenter="0" verticalCenter="0"/>
 		</mx:Canvas>
 		<mx:Canvas label="login" width="100%" height="100%">
-			<petetweet:login_register id="loginForm" creationComplete="loginFormInit();" left="10" top="10">
+			<petetweet:login_register horizontalCenter="0" verticalCenter="-6" id="loginForm" creationComplete="loginFormInit();">
 			</petetweet:login_register>
-			<mx:Panel layout="absolute" title="Here is what's happening on PeteTweet" right="10" left="380" top="10" bottom="10">
-				<mx:List dataProvider="{publicTweets}" variableRowHeight="true" right="0" left="0" top="0" bottom="0">
-					<mx:itemRenderer>
-						<mx:Component>
-							<petetweet:PublicTweetRenderer>
-								
-							</petetweet:PublicTweetRenderer>
-						        	</mx:Component>
-					</mx:itemRenderer>
-				</mx:List>
-			</mx:Panel>
-			<mx:Label text="PeteTweet" fontSize="36" bottom="10" left="10"/>
 		</mx:Canvas>
-		<mx:Canvas label="loading" width="100%" height="50%">
-		
-		<mx:ViewStack id="appStack" left="0" right="0" top="39" bottom="0" selectedIndex="0">
+		<mx:Accordion left="0" top="0" bottom="0" right="0">
 			<mx:Canvas label="Home Page" width="100%" height="100%">
-				<mx:RichTextEditor y="10" title="What are you doing?" width="421" height="213" x="10" id="tweetEditor"
-					creationComplete="customizeEditor();"  change="updateCount();" textAreaStyleName="rteStyle">
+				<mx:RichTextEditor y="10" title="What are you doing?" width="421" height="213" x="10" id="txt_tweetInput">
 				</mx:RichTextEditor>
 		        <mx:Button x="364" y="192" label="Post" click="handlePost();"/>
 				<mx:Button x="285" y="192" label="Refresh" click="updateTweets();"/>
-				<mx:Panel x="10" width="421" layout="absolute" title="Search" bottom="10" top="231">
-					<mx:TextInput y="10" left="10" right="83" id="searchForm"/>
-					<mx:Button y="10" label="Search" right="10" click="doSearch();"/>
-					<mx:DataGrid id="searchGrid" left="10" right="10" top="40" bottom="39" dataProvider="{searchResults}">
-						<mx:columns>
-							<mx:DataGridColumn headerText="Username" dataField="username"/>
-							<mx:DataGridColumn headerText="First Name" dataField="firstname"/>
-							<mx:DataGridColumn headerText="Last Name" dataField="lastname"/>
-						</mx:columns>
-					</mx:DataGrid>
-					<mx:Button label="View User's Tweets" click="getUserTweets();" bottom="10" right="10"/>
-					<mx:Button label="Clear Results" click="searchResults.removeAll();" bottom="10" left="10"/>
+
+				<mx:List dataProvider="{tweets}" variableRowHeight="true" right="10" left="439" top="10" bottom="10">
+					<mx:itemRenderer>
+						<mx:Component>
+							<petetweet:TweetRenderer>
+								
+							</petetweet:TweetRenderer>
+		            	</mx:Component>
+					</mx:itemRenderer>
+				</mx:List>
+				<mx:Panel x="10" y="231" width="421" height="149" layout="absolute" title="Search for Tweets">
 				</mx:Panel>
-				<mx:TabNavigator bottom="10" top="10" right="10" left="439">
-					<mx:Canvas label="Public Timeline" width="100%" height="100%">
-						<mx:List dataProvider="{publicTweets}" variableRowHeight="true" right="0" left="0" top="0" bottom="0">
-							<mx:itemRenderer>
-								<mx:Component>
-									<petetweet:TweetRenderer>
-										
-									</petetweet:TweetRenderer>
-								        	</mx:Component>
-							</mx:itemRenderer>
-						</mx:List>
-					</mx:Canvas>
-					<mx:Canvas label="My Updates" width="100%" height="100%">
-						<mx:List dataProvider="{myTweets}" variableRowHeight="true" left="0" right="0" top="0" bottom="0">
-							<mx:itemRenderer>
-								<mx:Component>
-									<petetweet:TweetRenderer>
-										
-									</petetweet:TweetRenderer>
-								        	</mx:Component>
-							</mx:itemRenderer>
-						</mx:List>
-					</mx:Canvas>
-					<mx:Canvas id="searchTimeline" label="Search Timeline" width="100%" height="100%">
-						<mx:List dataProvider="{searchTweets}" variableRowHeight="true" right="0" left="0" top="0" bottom="0">
-							<mx:itemRenderer>
-								<mx:Component>
-									<petetweet:TweetRenderer>
-										
-									</petetweet:TweetRenderer>
-								        	</mx:Component>
-							</mx:itemRenderer>
-						</mx:List>
-					</mx:Canvas>
-				</mx:TabNavigator>
-				<mx:Label x="217" y="17" text="Remaining Characters:"/>
-				<mx:Label x="364" y="17" text="256" fontSize="10" fontWeight="bold" id="remainingChars"/>
 			</mx:Canvas>
 			<mx:Canvas label="Messaging" width="100%" height="100%">
 			</mx:Canvas>
 			<mx:Canvas label="Profile" width="100%" height="100%">
-				<mx:Panel width="365" layout="absolute" title="Profile Editor" top="10" bottom="10" left="10">
-					<mx:Label x="10" y="18" text="Howdy, " fontSize="19"/>
-					<mx:Label x="89" y="18" text="{userProfile.firstname}" fontSize="19" width="148" truncateToFit="true"/>
-					<mx:Image x="243" y="10" width="90" height="90" source="{gravatarUrl(userProfile.email, 90)}"/>
-					<mx:Label x="10" y="114" text="First Name:"/>
-					<mx:Label x="10" y="114" text="First Name:"/>
-					<mx:Label x="10" y="328" text="Password:"/>
-					<mx:Label x="10" y="384" text="Confirm:"/>
-					<mx:Label x="10" y="252" text="Email Address:"/>
-					<mx:Label x="10" y="170" text="Last Name:"/>
-					<mx:TextInput x="10" y="354" width="242"/>
-					<mx:TextInput x="10" y="140" width="242" text="{userProfile.firstname}"/>
-					<mx:TextInput x="10" y="410" width="242"/>
-					<mx:TextInput x="10" y="278" width="242" text="{userProfile.email}"/>
-					<mx:TextInput x="10" y="196" width="242" text="{userProfile.lastname}"/>
-					<mx:Button x="89" label="Reset" bottom="10"/>
-					<mx:Button x="180" label="Change!" bottom="10"/>
-					<mx:LinkButton x="228" y="106" label="(Get a Gravatar)" 
-						click="var u:URLRequest = new URLRequest('http://gravatar.com'); navigateToURL(u,'_blank'); "/>
-					<mx:Label x="10" y="55" text="You have been a memeber since:"/>
-					<mx:Label x="10" y="73" text="{userProfile.reg_date}" width="216" fontStyle="italic"/>
+				
+				<mx:HDividedBox left="0" top="0" bottom="0" right="0" liveDragging="true">
+				<mx:Panel width="250" layout="absolute" left="10" bottom="10" top="10" height="100%">
+					<mx:Label x="10" y="99" text="Change Last Name"/>
+					<mx:Label x="10" y="10" text="Username"/>
+					<mx:Label x="10" y="56" text="Change First Name"/>
+					<mx:Label x="10" y="146" text="Change Password"/>
+					<mx:Label x="10" y="236" text="Change Email"/>
+					<mx:Label x="10" y="193" text="Confirm New Password"/>
+					<mx:TextInput x="10" y="26" editable="false"/>
+					<mx:TextInput x="10" y="69"/>
+					<mx:TextInput x="10" y="116"/>
+					<mx:TextInput x="10" y="163"/>
+					<mx:TextInput x="10" y="206"/>
+					<mx:TextInput x="10" y="253"/>
 				</mx:Panel>
+				<mx:Panel width="50%" height="100%" layout="absolute">
+					<mx:Label x="52" y="30" text="Number of people you follow"/>
+					<mx:Label x="52" y="75" text="Number of people following you"/>
+					<mx:Label x="52" y="117" text="Number of tweets"/>
+					<mx:Label x="52" y="165" text="Number of private tweets"/>
+					<mx:Label x="52" y="214" text="Most tweeted friends"/>
+				</mx:Panel>
+				</mx:HDividedBox>
+				
 			</mx:Canvas>
-			<mx:Canvas label="Help" width="100%" height="100%">
-			</mx:Canvas>
-		</mx:ViewStack>
-		<mx:ApplicationControlBar y="0" height="38" right="0" left="0" dock="true">
-			<mx:Label text="PeteTweet" fontSize="20"/>
-			<mx:Spacer width="30"/>
-			<mx:ToggleButtonBar dataProvider="appStack">
-			</mx:ToggleButtonBar>
-			<mx:Spacer width="30"/>
-			<mx:Button label="Logout" click="doLogout();"/>
-		</mx:ApplicationControlBar>
-		</mx:Canvas>
+		</mx:Accordion>
 	</mx:ViewStack>
 	
 </mx:Application>
