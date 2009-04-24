@@ -27,6 +27,7 @@ services = {
     'petetweet.gettweets': api.gettweets,
     'petetweet.getusertweets': api.getusertweets,
     'petetweet.getalltweets': api.getalltweets,
+    'petetweet.search': api.search,
 }
 
 def main():
