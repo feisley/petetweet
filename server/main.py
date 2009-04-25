@@ -32,6 +32,13 @@ services = {
     'petetweet.profile': api.getMyProfile,
     'petetweet.updateprofile': api.updateMyProfile,
     'petetweet.getprofile': api.getProfile,
+    
+    'petetweet.follow': api.follow,
+    'petetweet.unfollow': api.unfollow,
+    'petetweet.checkfollower': api.checkFollowers,
+    'petetweet.checkfollowing': api.checkFollowing,
+    'petetweet.followers': api.followers,
+    'petetweet.following': api.following,
 }
 
 def main():

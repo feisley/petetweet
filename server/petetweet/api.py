@@ -4,6 +4,17 @@ from appengine_utilities.sessions import Session
 from data import *
 import util
 
+import logging
+
+
+def NotLoggedInError(Exception):
+    pass
+    
+
+def loginRequired():
+    if status == False:
+        raise NotLoggedInError("You must be authenticated to use this API call")
+    
 
 def register(username, password, firstname, lastname, email):
     
@@ -108,27 +119,38 @@ def search(str):
     # Check usernames
     q = User.all();
     q.filter("username =", str)
-    r1 = set(q.fetch(10))
+    r1 = q.fetch(10)
     
     # Check firstname
     q = User.all();
     q.filter("firstname =", str)
-    r2 = set(q.fetch(10))
+    r2 = q.fetch(10)
     
     # Check lastname
     q = User.all();
     q.filter("lastname =", str)
-    r3 = set(q.fetch(10))
+    r3 = q.fetch(10)
     
     # Check email
     q = User.all();
     q.filter("email =", str) 
-    r4 = set(q.fetch(10))
+    r4 = q.fetch(10)
+    
+    rx = r1 + r2 + r3 + r4
+    
+    logging.info(r1)
+    logging.info(r2)
+    logging.info(r3)
+    logging.info(r4)
+    
+    def f(x):
+        return x.key() in rx
     
     # Build Result set
-    f = r1.union(r2.union(r3.union(r4)))
+    f = filter(f, rx)
+    logging.info(f)
     
-    return f;
+    return r1;
 
 def getMyProfile():
     if status:
@@ -160,5 +182,72 @@ def getProfile(userid):
     q.filter("__key__ =", db.Key(userid))
     
     return q.get()
+    
+    
+def follow(userid):
+    
+    s = Session()
+    me = s['user']
+    them = db.Key(userid)
+    
+    f = Follow(follower = me, followee = them)
+    
+
+def unfollow(userid):
+    
+    s = Session()
+    me = s['user']
+    them = db.Key(userid)
+    
+    q = Follow.all()
+    q.filter("follower =", me)
+    q.filter("followee =", them)
+    q.get();
+    
+    f = Follow(follower = me, followee = them)
+
+def checkFollower(userid):
+    
+    s = Session()
+    me = s['user']
+    them = db.Key(userid)
+    
+    q = Follow.all()
+    q.filter("follower =", them)
+    q.filter("followee =", me)
+    c = q.count();
+    
+    if c > 0:
+        return True
+    else:
+        return False
+
+def checkFollowing(userid):
+
+    s = Session()
+    me = s['user']
+    them = db.Key(userid)
+    
+    q = Follow.all()
+    q.filter("follower =", me)
+    q.filter("followee =", them)
+    c = q.count();
+    
+    if c > 0:
+        return True
+    else:
+        return False
+
+def follerwers():
+    
+    s = Session()
+    me = s['user']
+    them = db.Key(userid)
+    
+def following():
+
+    s = Session()
+    me = s['user']
+    them = db.Key(userid)
     
     
