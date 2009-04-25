@@ -92,7 +92,6 @@
 					btn_follow.enabled = false;
 					btn_follow.label="Loading..."
 					getUserTweetsByUID(event.uid);
-					homeTabs.selectedIndex = 2;
 				}
 				else{
 					appStack.selectedIndex = 2;
@@ -302,13 +301,15 @@
 			}
 			
 			private function getUserTweets():void {
-         		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), searchGrid.selectedItem._key);
+				profileLoading();
          		gw.call("petetweet.getprofile", new Responder(gotUserProfile, gotTweetFault), searchGrid.selectedItem._key);
+         		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), searchGrid.selectedItem._key);
             }
             private function getUserTweetsByUID(uid:String):void{
-            	gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), uid);
+            	profileLoading();
          		gw.call("petetweet.getprofile", new Responder(gotUserProfile, gotTweetFault), uid);
          		gw.call("petetweet.checkfollowing", new Responder(gotUserFollowing, gotTweetFault), uid);
+         		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), uid);
             }
             private function gotUserFollowing(following:Boolean):void{
             	if(following){
@@ -329,17 +330,18 @@
             private function gotUserProfile(o:Object):void {
             	currentProfile = o;
             }
+            private function profileLoading():void{
+            	homeTabs.selectedIndex = 2;
+            	profileStack.selectedIndex = 2;
+            	
+            }
             
             private function handleFollowClick(uid:String):void{
             	if(btn_follow.label == "Follow this User"){
-            		btn_follow.enabled = false;
-            		btn_follow.label ="Loading...";
             		gw.call("petetweet.follow", new Responder(gotResponse, gotTweetFault), uid);
             		getUserTweetsByUID(uid);
             	}
             	else if(btn_follow.label == "Stop Following"){
-            		btn_follow.enabled = false;
-            		btn_follow.label ="Loading...";
             		gw.call("petetweet.unfollow", new Responder(gotResponse, gotTweetFault), uid);
             		getUserTweetsByUID(uid);
             	}
@@ -495,6 +497,9 @@
 								<mx:Button y="50" label="Private Message" right="10"/>
 								<mx:Label x="108" y="50" text="This user has been a memeber since:"/>
 								<mx:Label x="108" y="66" text="{currentProfile.reg_date}" width="216" fontStyle="italic"/>
+							</mx:Canvas>
+							<mx:Canvas label="Loading Profile" width="100%" height="100%">
+								<mx:ProgressBar indeterminate="true" horizontalCenter="-1" verticalCenter="-10" labelPlacement="center"/>
 							</mx:Canvas>
 						</mx:ViewStack>
 					</mx:Canvas>
