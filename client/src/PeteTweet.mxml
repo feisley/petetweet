@@ -80,6 +80,13 @@
 				loginForm.addEventListener("LoginEvent",loginHandler);
 				loginForm.addEventListener("RegisterEvent",registerHandler);
 			}
+			public function profileListInit():void{
+				profileList.addEventListener("ViewProfileEvent",viewProfileHandler);
+			}
+			public function viewProfileHandler(event:ViewProfileEvent):void{
+				getUserTweetsByUID(event.uid);
+				homeTabs.selectedIndex = 2;
+			}
 			public function goToMainPage():void {
 				viewstack1.selectedIndex = 2;
 				updateTweets();
@@ -270,7 +277,10 @@
          		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), searchGrid.selectedItem._key);
          		gw.call("petetweet.getprofile", new Responder(gotUserProfile, gotTweetFault), searchGrid.selectedItem._key);
             }
-            
+            private function getUserTweetsByUID(uid:String):void{
+            	gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), uid);
+         		gw.call("petetweet.getprofile", new Responder(gotUserProfile, gotTweetFault), uid);
+            }
             private function gotUserTweets(arr:Array):void {
             	searchTweets = new ArrayCollection(arr);
             	homeTabs.selectedIndex = 2;
@@ -392,7 +402,7 @@
 				</mx:Panel>
 				<mx:TabNavigator bottom="10" top="10" right="10" left="439" id="homeTabs" creationPolicy="all">
 					<mx:Canvas label="Public Timeline" width="100%" height="100%">
-						<mx:List dataProvider="{publicTweets}" variableRowHeight="true" right="0" left="0" top="0" bottom="0">
+						<mx:List dataProvider="{publicTweets}" id="profileList" variableRowHeight="true" right="0" left="0" top="0" bottom="0" creationComplete="profileListInit();">
 							<mx:itemRenderer>
 								<mx:Component>
 									<petetweet:TweetRenderer>
