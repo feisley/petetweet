@@ -87,8 +87,9 @@
 				loginForm.addEventListener("LoginEvent",loginHandler);
 				loginForm.addEventListener("RegisterEvent",registerHandler);
 			}
-			public function profileListInit():void{
+			public function listInit():void{
 				profileList.addEventListener("ViewProfileEvent",viewProfileHandler);
+				friendsList.addEventListener("ViewProfileEvent",viewProfileHandler);
 			}
 			public function viewProfileHandler(event:ViewProfileEvent):void{
 				if(!(userProfile._key == event.uid)){
@@ -278,6 +279,7 @@
             }
             private function getUserTweetsByUID(uid:String):void{
             	profileLoading();
+            	gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
          		gw.call("petetweet.getprofile", new Responder(gotUserProfile, gotTweetFault), uid);
          		gw.call("petetweet.checkfollowing", new Responder(gotUserFollowing, gotTweetFault), uid);
          		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), uid);
@@ -442,7 +444,7 @@
 				</mx:Panel>
 				<mx:TabNavigator bottom="30" top="11" right="9" left="440" id="homeTabs" creationPolicy="all">
 					<mx:Canvas label="Public Timeline" width="100%" height="100%">
-						<mx:List dataProvider="{publicTweets}" id="profileList" variableRowHeight="true" right="0" left="0" top="0" bottom="0" creationComplete="profileListInit();">
+						<mx:List dataProvider="{publicTweets}" id="profileList" variableRowHeight="true" right="0" left="0" top="0" bottom="0" creationComplete="listInit();">
 							<mx:itemRenderer>
 								<mx:Component>
 									<petetweet:TweetRenderer>
@@ -453,7 +455,7 @@
 						</mx:List>
 					</mx:Canvas>
 					<mx:Canvas label="My Friends" width="100%" height="100%">
-						<mx:List dataProvider="{friendTweets}" variableRowHeight="true" right="0" left="0" top="0" bottom="0">
+						<mx:List dataProvider="{friendTweets}" id="friendsList" variableRowHeight="true" right="0" left="0" top="0" bottom="0" creationComplete="listInit();">
 							<mx:itemRenderer>
 								<mx:Component>
 									<petetweet:TweetRenderer>
