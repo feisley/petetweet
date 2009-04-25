@@ -131,13 +131,19 @@ def getfollowedtweets(limit = 10):
             q = Tweet.all()
             q.filter("user =", f.followee)
             q.order("-post_date")
-            r = q.fetch(limit)
-            logging.info(r)
-            result += r
+            result += q.fetch(limit)
 
-    logging.info(result)
+    final =  util.sort_by_attr(result, "post_date")
+    final.reverse()
     
-    return result
+    return final
+
+
+def sendMessage(userid, message):
+    pass
+
+def getMessages():
+    pass
     
 
 def search(str):
@@ -268,19 +274,19 @@ def followers():
     
     s = Session()
     me = s['user']
-    them = db.Key(userid)
     
     q = Follow.all()
     q.filter("followee =", me)
     
-    return q.fetch(1000)
+    f = q.fetch(1000)
+    
+    return [x.followee for x in f]
     
     
 def following():
 
     s = Session()
     me = s['user']
-    them = db.Key(userid)
     
     q = Follow.all()
     q.filter("follower =", me)
