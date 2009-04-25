@@ -35,7 +35,7 @@ services = {
     
     'petetweet.follow': api.follow,
     'petetweet.unfollow': api.unfollow,
-    'petetweet.checkfollower': api.checkFollowers,
+    'petetweet.checkfollower': api.checkFollower,
     'petetweet.checkfollowing': api.checkFollowing,
     'petetweet.followers': api.followers,
     'petetweet.following': api.following,
