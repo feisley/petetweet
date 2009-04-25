@@ -468,6 +468,9 @@
 		<mx:Canvas label="loading" width="100%" height="100%">
 			<mx:ProgressBar indeterminate="true" horizontalCenter="0" verticalCenter="0" labelPlacement="center" width="320" height="18"/>
 			<mx:Label text="Welcome to PeteTweet!" verticalCenter="-66" fontSize="36" horizontalCenter="0"/>
+			<mx:Image width="120" height="30" horizontalCenter="9" verticalCenter="63">
+				<mx:source>http://code.google.com/appengine/images/appengine-silver-120x30.gif</mx:source>
+			</mx:Image>
 		</mx:Canvas>
 		<mx:Canvas label="login" width="100%" height="100%">
 			<petetweet:login_register id="loginForm" creationComplete="loginFormInit();" left="10" top="10">
@@ -508,7 +511,7 @@
 					<mx:Button label="View User's Profile" click="getUserTweets();" bottom="10" right="10"/>
 					<mx:Button label="Clear Results" click="searchResults.removeAll();" bottom="10" left="10"/>
 				</mx:Panel>
-				<mx:TabNavigator bottom="30" top="11" right="9" left="440" id="homeTabs" creationPolicy="all">
+				<mx:TabNavigator bottom="39" top="11" right="9" left="440" id="homeTabs" creationPolicy="all">
 					<mx:Canvas label="Public Timeline" width="100%" height="100%">
 						<mx:List dataProvider="{publicTweets}" id="profileList" variableRowHeight="true" right="0" left="0" top="0" bottom="0" creationComplete="listInit();">
 							<mx:itemRenderer>
@@ -565,8 +568,8 @@
 				</mx:TabNavigator>
 				<mx:Label x="217" y="17" text="Remaining Characters:"/>
 				<mx:Label x="364" y="17" text="256" fontSize="10" fontWeight="bold" id="remainingChars"/>
-				<mx:ComboBox right="10" bottom="5" selectedIndex="0" dataProvider="{numTweetChoices}" change="getMoreTweets();" id="numTweetChoiceMenu"></mx:ComboBox>
-				<mx:Label text="Show More Tweets" bottom="7" right="87"/>
+				<mx:ComboBox right="10" bottom="10" selectedIndex="0" dataProvider="{numTweetChoices}" change="getMoreTweets();" id="numTweetChoiceMenu"></mx:ComboBox>
+				<mx:Label text="Show More Tweets" bottom="12" right="87"/>
 			</mx:Canvas>
 			<mx:Canvas label="Messaging" width="100%" height="100%">
 				<mx:RichTextEditor y="10" title="" width="421" height="213" x="10" id="messageEditor"
