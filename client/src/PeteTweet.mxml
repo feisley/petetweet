@@ -25,6 +25,7 @@
 			import mx.managers.CursorManager;
 			import com.adobe.crypto.SHA256;
 			import com.adobe.crypto.MD5;
+
 			public var gw:NetConnection = new NetConnection();
 			
 			[Bindable]
@@ -119,9 +120,10 @@
 					if(temp.username == event.username){
 						privMessageList.selectedIndex = i;
 						messageEditor.textArea.setFocus();
-						break;
+						return;
 					}
 				}
+				Alert.show("You must follow this person to reply to them!");
 			}
 			public function unfollowUserHandler(event:UnfollowUserEvent):void{
 				gw.call("petetweet.unfollow", new Responder(gotResponse, gotTweetFault), event.uid);
