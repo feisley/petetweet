@@ -226,6 +226,21 @@
             	currentProfile = o;
             }
             
+            private function updateUserProfile():void {
+            	gw.call("petetweet.updateprofile", 
+            		new Responder(gotProfileUpdate, gotProfileUpdateFault), 
+            		userProfile._key, userProfile.firstname, userProfile.lastname, userProfile.email,
+            		SHA256.hash(profilePassword.text));
+            }
+            
+            private function gotProfileUpdate(){
+            	
+            }
+            
+            private function gotProfileUpdateFault(o:Object) {
+            	
+            }
+            
             private function gotText(evt:TextEvent):void {
             	if (evt.text == "\n") {
 					var a:Array = tweetEditor.htmlText.split("</P>", 256);
@@ -364,13 +379,13 @@
 					<mx:Label x="10" y="384" text="Confirm:"/>
 					<mx:Label x="10" y="252" text="Email Address:"/>
 					<mx:Label x="10" y="170" text="Last Name:"/>
-					<mx:TextInput x="10" y="354" width="242"/>
+					<mx:TextInput x="10" y="354" width="242" id="profilePassword"/>
 					<mx:TextInput x="10" y="140" width="242" text="{userProfile.firstname}"/>
 					<mx:TextInput x="10" y="410" width="242"/>
 					<mx:TextInput x="10" y="278" width="242" text="{userProfile.email}"/>
 					<mx:TextInput x="10" y="196" width="242" text="{userProfile.lastname}"/>
 					<mx:Button x="89" label="Reset" bottom="10"/>
-					<mx:Button x="180" label="Change!" bottom="10"/>
+					<mx:Button x="180" label="Change!" bottom="10" click="updateUserProfile();"/>
 					<mx:LinkButton x="228" y="106" label="(Get a Gravatar)" 
 						click="var u:URLRequest = new URLRequest('http://gravatar.com'); navigateToURL(u,'_blank'); "/>
 					<mx:Label x="10" y="55" text="You have been a memeber since:"/>
