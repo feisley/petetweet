@@ -378,15 +378,18 @@
 				</mx:Panel>
 			</mx:Canvas>
 			<mx:Canvas label="About" width="100%" height="100%">
-				<mx:Panel layout="absolute" right="150" bottom="137" top="150" left="150" title="About PeteTweet!">
-					<mx:Label y="2" text="PeteTweet" fontSize="36" fontFamily="Georgia" fontWeight="normal" color="#2584BB" horizontalCenter="0" textDecoration="underline"/>
-					<mx:Label x="141.5" y="47" text="Version: 2.3.8" fontSize="20" fontFamily="Georgia" color="#EF0D0D"/>
-					<mx:Label x="10" y="85" text="Creators:" fontSize="20" fontFamily="Georgia" color="#EF0D0D"/>
-					<mx:Label x="105" y="108" text="Justin Dian" fontFamily="Georgia" fontSize="14" color="#1D9D13"/>
-					<mx:Label x="105" y="139" text="Jacob Feisley" fontFamily="Georgia" fontSize="14" color="#1D9D13"/>
-					<mx:Label x="105" y="169" text="Jason Ortiz" fontSize="14" fontFamily="Georgia" color="#1D9D13"/>
-					<mx:Label x="214" y="85" text="Created:" fontSize="20" fontFamily="Georgia" color="#EF0D0D"/>
-					<mx:Label x="302" y="112" text="April 26, 2009" fontSize="14" fontFamily="Georgia" color="#1D9D13"/>
+				<mx:Panel layout="absolute" title="About PeteTweet!" width="432" height="240" horizontalCenter="0" verticalCenter="0">
+					<mx:Label y="2" text="PeteTweet" fontSize="36" fontFamily="Georgia" fontWeight="normal" color="#258BBB" horizontalCenter="0" textDecoration="underline"/>
+					<mx:Label x="141.5" y="57" text="Version: 2.3.8" fontSize="20" fontFamily="Georgia" color="#258BBB"/>
+					<mx:Label x="10" y="85" text="Creators:" fontSize="20" fontFamily="Georgia" color="#258BBB"/>
+					<mx:Label x="22" y="123" text="Justin Dian" fontFamily="Georgia" fontSize="14" color="#000000"/>
+					<mx:Label x="22" y="145" text="Jacob Feisley" fontFamily="Georgia" fontSize="14" color="#000000"/>
+					<mx:Label x="22" y="167" text="Jason Ortiz" fontSize="14" fontFamily="Georgia" color="#000000"/>
+					<mx:Label x="302" y="85" text="Created:" fontSize="20" fontFamily="Georgia" color="#258BBB"/>
+					<mx:Label x="302" y="123" text="April 26, 2009" fontSize="14" fontFamily="Georgia" color="#000000"/>
+					<mx:Image x="146" y="123" width="120" height="30">
+						<mx:source>http://code.google.com/appengine/images/appengine-silver-120x30.gif</mx:source>
+					</mx:Image>
 				</mx:Panel>
 			</mx:Canvas>
 		</mx:ViewStack>
