@@ -141,6 +141,8 @@
 				gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
 				gw.call("petetweet.gettweets", new Responder(gotMyTweets, gotTweetFault),numTweets);
 				gw.call("petetweet.profile", new Responder(gotProfile, gotTweetFault));
+				gw.call("petetweet.getreceivedmessages",new Responder(gotReceivedMessages,gotSearchFault));
+				gw.call("petetweet.getsentmessages",new Responder(gotSentMessages,gotSearchFault));
 				getFriends();
 			}
 			
@@ -199,6 +201,7 @@
 					gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
 					gw.call("petetweet.getreceivedmessages",new Responder(gotReceivedMessages,gotSearchFault));
 					gw.call("petetweet.getsentmessages",new Responder(gotSentMessages,gotSearchFault));
+					getFriends();
 				}
 			}
 			
