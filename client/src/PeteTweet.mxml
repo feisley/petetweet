@@ -46,6 +46,12 @@
 			public var following:ArrayCollection = new ArrayCollection();
 			
 			[Bindable]
+			public var sentMessages:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var receivedMessages:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
 			public var currentProfile:Object = new Object();
 			
 			[Bindable]
@@ -165,7 +171,6 @@
 			//--------------------END TWEET FUNCTIONS----------------------------------
 			
 			//--------------------STATUS FUNCTIONS----------------------------------
-			//TODO:Put this information in a page before the login page
 			public function statusPass(b:Boolean):void {
 				if(b) {
 					status = true;
@@ -268,6 +273,7 @@
 				//messageEditor.textArea.maxChars = 256
 				//messageEditor.fontSizeArray = new Array("16", "20");
 				getFriends();
+				gw.call("petetweet.getreceivedmessages",new Responder(gotReceivedMessages,gotSearchFault));
 			}
 			
 			private function updateCount():void {
@@ -381,13 +387,21 @@
             private function gotFriendResults(arr:Array):void {
             	trace("Updataing the following array");
             	following = new ArrayCollection(arr);
-            	
             }
             
             private function sendMessage():void {
-            	//call api send message
             	var textToSend:String = messageEditor.htmlText;
             	gw.call("petetweet.sendmessage",new Responder(gotMessage,gotSearchFault),privMessageList.selectedItem._key,textToSend);
+            	//update sentMessageList
+            	gw.call("petetweet.getsentmessages",new Responder(gotSentMessages,gotSearchFault));
+            }
+            
+            private function gotSentMessages(arr:Array):void {
+            	sentMessages = new ArrayCollection(arr);
+            }
+            
+            private function gotReceivedMessages(arr:Array):void {
+            	receivedMessages = new ArrayCollection(arr);
             }
             
             private function gotMessage(o:Object):void {
@@ -530,8 +544,26 @@
 								        	</mx:Component>
 							</mx:itemRenderer>
 						</mx:List>
+						<mx:List dataProvider="{receivedMessages}" id="messageInbox" variableRowHeight="true" right="0" left="0" top="0" bottom="0" creationComplete="listInit();">
+							<mx:itemRenderer>
+								<mx:Component>
+									<petetweet:MessageRenderer>
+										
+									</petetweet:MessageRenderer>
+								        	</mx:Component>
+							</mx:itemRenderer>
+						</mx:List>
 					</mx:Canvas>
 					<mx:Canvas label="Sent" width="100%" height="100%">
+						<mx:List dataProvider="{sentMessages}" id="sentMessageList" variableRowHeight="true" right="0" left="0" top="0" bottom="0" creationComplete="listInit();">
+							<mx:itemRenderer>
+								<mx:Component>
+									<petetweet:SentMessageRenderer>
+										
+									</petetweet:SentMessageRenderer>
+								        	</mx:Component>
+							</mx:itemRenderer>
+						</mx:List>
 					</mx:Canvas>
 				</mx:TabNavigator>
 				<mx:Label x="34" y="15" text="Send a private message to:" fontSize="14"/>
