@@ -167,6 +167,7 @@
 				sentMessages.removeAll();
 				receivedMessages.removeAll();
 				following.removeAll();
+				followers.removeAll();
 				userProfile = null;
 				currentProfile = null;
 				appStack.selectedIndex = 0;
