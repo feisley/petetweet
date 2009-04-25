@@ -97,6 +97,13 @@
 				profileList.addEventListener("ViewProfileEvent",viewProfileHandler);
 				friendsList.addEventListener("ViewProfileEvent",viewProfileHandler);
 			}
+			public function profileListInit():void{
+				followingUsers.addEventListener("UnfollowUserEvent",unfollowUserHandler);
+			}
+			private function unfollowUserHandler(event:UnfollowUserEvent):void{
+				gw.call("petetweet.unfollow", new Responder(gotResponse, gotTweetFault), event.uid);
+				getFriends();
+			}
 			public function viewProfileHandler(event:ViewProfileEvent):void{
 				if(!(userProfile._key == event.uid)){
 					btn_follow.enabled = false;
@@ -111,6 +118,7 @@
 				viewstack1.selectedIndex = 2;
 				//updateTweets();
 				gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
+				gw.call("petetweet.gettweets", new Responder(gotMyTweets, gotTweetFault),numTweets);
 				gw.call("petetweet.profile", new Responder(gotProfile, gotTweetFault))
 			}
 			
@@ -282,6 +290,7 @@
 			
 			private function getUserTweets():void {
 				profileLoading();
+				gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
          		gw.call("petetweet.getprofile", new Responder(gotUserProfile, gotTweetFault), searchGrid.selectedItem._key);
          		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), searchGrid.selectedItem._key);
             }
@@ -606,6 +615,15 @@
 						</mx:List>
 					</mx:Canvas>
 					<mx:Canvas label="Following" width="100%" height="100%">
+						<mx:List dataProvider="{following}" id="followingUsers" variableRowHeight="true" bottom="0" top="0" left="0" right="0" creationComplete="profileListInit();">
+							<mx:itemRenderer>
+								<mx:Component>
+									<petetweet:UserRenderer>
+										
+									</petetweet:UserRenderer>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:List>
 					</mx:Canvas>
 					<mx:Canvas label="Followers" width="100%" height="100%">
 					</mx:Canvas>

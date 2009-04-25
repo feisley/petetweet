@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="662" height="100">
+							
+	<mx:Script>
+		<![CDATA[
+		import com.adobe.crypto.MD5;
+		import com.petetweet.client.events.*;
+		
+		private function updateHeight(target:Object):void
+			{
+				target.validateNow();
+				target.height = target.textHeight + 30;
+				target.validateSize();
+			}
+			
+			private function gravatarUrl(email:String, size:int):String {
+				
+				"http://www.gravatar.com/avatar/917fb9355a5d0593f86472f7fb61df41?s=60&d=identicon&r=G"
+				if (email.length == 0) {
+					email = "nothing"
+				}
+				var gid:String = MD5.hash(email);
+				var url:String = "http://www.gravatar.com/avatar/" + gid + "?s="+ size +"&d=identicon&r=G";
+				
+				trace(url);
+				return url;
+			}
+			private function unfollowUser(uid:String):void{
+				dispatchEvent(new UnfollowUserEvent(uid));
+			}
+		]]>
+	</mx:Script>
+		<mx:Label text="{data.username}" height="24" fontSize="14" y="10" left="108" right="327" fontStyle="italic"/>
+		<mx:Label text="{data.email}" height="24" fontSize="14" y="54" left="108" right="327" fontStyle="italic"/>
+		<mx:Label text="{data.firstname} {data.lastname}" height="24" fontSize="14" y="32" left="108" right="327" fontStyle="italic"/>
+		<mx:Image width="90" height="90" source="{gravatarUrl(data.email,90)}" x="10" verticalCenter="0"/>
+		<mx:Button y="34" label="Stop Following" enabled="true" id="btn_follow" right="30" click="unfollowUser(data._key);"/>
+		   
+</mx:Canvas>
