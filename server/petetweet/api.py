@@ -72,7 +72,7 @@ def getusertweets(userid, limit = 10):
         raise ValueError("Limit must be from 1 - 1000")
     
     q = Tweet.all()
-    q.filter("user =", userid)
+    q.filter("user =", db.Key(userid))
     q.order("-post_date")
     
     return q.fetch(limit)
@@ -104,24 +104,26 @@ def search(str):
     
     # Check usernames
     q = User.all();
-    q.filter("username =", str);
-    
+    q.filter("username =", str)
     r1 = set(q.fetch(10))
     
     # Check firstname
     q = User.all();
-    q.filter("firstname =", str);
-    
+    q.filter("firstname =", str)
     r2 = set(q.fetch(10))
     
     # Check lastname
     q = User.all();
-    q.filter("lastname =", str);
-    
+    q.filter("lastname =", str)
     r3 = set(q.fetch(10))
     
+    # Check lastname
+    q = User.all();
+    q.filter("lastname =", str) 
+    r4 = set(q.fetch(10))
+    
     # Build Result set
-    f = r1.union(r2.union(r3))
+    f = r1.union(r2.union(r3.union(r4)))
     
     return f;
 

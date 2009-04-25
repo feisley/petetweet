@@ -210,7 +210,7 @@
 			}
 			
 			private function getUserTweets():void {
-         		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), searchGrid.selectedItem);
+         		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), searchGrid.selectedItem._key);
             }
             
             private function gotUserTweets(arr:Array):void {
@@ -311,7 +311,7 @@
 							</mx:itemRenderer>
 						</mx:List>
 					</mx:Canvas>
-					<mx:Canvas id="searchTimeline" label="Search Timeline" width="100%" height="100%">
+					<mx:Canvas id="searchTimeline" label="User Timeline" width="100%" height="100%">
 						<mx:List dataProvider="{searchTweets}" variableRowHeight="true" right="0" left="0" top="0" bottom="0">
 							<mx:itemRenderer>
 								<mx:Component>
@@ -331,7 +331,7 @@
 			<mx:Canvas label="Profile" width="100%" height="100%">
 				<mx:Panel width="365" layout="absolute" title="Profile Editor" top="10" bottom="10" left="10">
 					<mx:Label x="10" y="18" text="Howdy, " fontSize="19"/>
-					<mx:Label x="83" y="18" text="{userProfile.firstname}" fontSize="19" width="152" truncateToFit="true"/>
+					<mx:Label x="89" y="18" text="{userProfile.firstname}" fontSize="19" width="146" truncateToFit="true"/>
 					<mx:Image x="243" y="10" width="90" height="90" source="{gravatarUrl(userProfile.email, 90)}"/>
 					<mx:Label x="10" y="114" text="First Name:"/>
 					<mx:Label x="10" y="114" text="First Name:"/>

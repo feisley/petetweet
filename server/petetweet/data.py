@@ -27,3 +27,7 @@ class Message(db.Model):
   recipient = db.ReferenceProperty(User, collection_name='received_messages')
   send_date = db.DateTimeProperty(auto_now_add=True)
   text = db.TextProperty()
+  
+class Follow(db.Model):
+    follower = db.ReferenceProperty(User, collection_name='following')
+    folowee = db.ReferenceProperty(User, collection_name='followers')
