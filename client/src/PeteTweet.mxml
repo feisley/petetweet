@@ -163,6 +163,8 @@
 				if (status) {
 					gw.call("petetweet.gettweets", new Responder(gotMyTweets, gotTweetFault),numTweets);
 					gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
+					gw.call("petetweet.getreceivedmessages",new Responder(gotReceivedMessages,gotSearchFault));
+					gw.call("petetweet.getsentmessages",new Responder(gotSentMessages,gotSearchFault));
 				}
 			}
 			
@@ -282,6 +284,7 @@
 				//messageEditor.fontSizeArray = new Array("16", "20");
 				getFriends();
 				gw.call("petetweet.getreceivedmessages",new Responder(gotReceivedMessages,gotSearchFault));
+				gw.call("petetweet.getsentmessages",new Responder(gotSentMessages,gotSearchFault));
 			}
 			
 			private function updateCount():void {
@@ -407,6 +410,7 @@
             
             private function gotSentMessages(arr:Array):void {
             	sentMessages = new ArrayCollection(arr);
+            	messageEditor.text = "";
             }
             
             private function gotReceivedMessages(arr:Array):void {
@@ -578,7 +582,7 @@
 				<mx:Label x="34" y="15" text="Send a private message to:" fontSize="14"/>
 				<mx:ComboBox x="246" y="15" editable="false" selectedIndex="0" dataProvider="{following}" id="privMessageList" labelField="username" width="154"></mx:ComboBox>
 				<mx:Label text="PeteTweet" fontSize="36" bottom="10" left="10"/>
-				<mx:Button x="335" y="192" label="Send" click="sendMessage();"/>
+				<mx:Button x="364" y="192" label="Send" click="sendMessage();"/>
 			</mx:Canvas>
 			<mx:Canvas label="Profile" width="100%" height="100%">
 				<mx:Panel width="365" layout="absolute" title="Profile Editor" top="10" bottom="10" left="10">
