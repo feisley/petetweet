@@ -5,6 +5,15 @@
 	<mx:Script>
 		<![CDATA[
 			import com.petetweet.client.events.*;
+			import mx.validators.Validator;
+			import mx.events.ValidationResultEvent;
+			
+			[Bindable]
+            public var formIsValid:Boolean = false;
+    
+            // Holds a reference to the currently focussed 
+            // control on the form.
+            private var focussedFormControl:DisplayObject;
 			
 			public function init():void{
 				this.addEventListener("LoginFailEvent",loginFailure);
@@ -32,6 +41,7 @@
 				//TODO: Display login failed somewhere
 				currentState='LoginError';
 				lbl_login_error.text = event.error.description;
+				formIsValid = false;
 			}
 			
 			public function doRegister():void {
@@ -41,14 +51,59 @@
 				var firstname:String = txt_firstname.text;
 				var lastname:String = txt_lastname.text;
 				var email:String = txt_email.text;
-				if(password == cpassword)
-					dispatchEvent(new RegisterEvent(username,password,cpassword,firstname,lastname,email));
-				else{
-					currentState='RegisterError';
-					lbl_register_error.text = "Your passwords do not match!";
-				}
-				//trace("Register: U="+username+"P="+password+"CP="+cpassword);
+				
+				dispatchEvent(new RegisterEvent(username,password,cpassword,firstname,lastname,email));
 			}
+			private function validateForm(event:Event):void 
+            {                    
+                // Save a reference to the currently focussed form control
+                // so that the isValid() helper method can notify only
+                // the currently focussed form control and not affect
+                // any of the other form controls.
+                focussedFormControl = event.target as DisplayObject;    
+
+                // Mark the form as valid to start with                
+                formIsValid = true;            
+                
+                if(currentState=='Register' || currentState=='RegisterError'){ 
+                	validate(nameValidator);
+                	validate(passwordValidator);
+                	validate(cpasswordValidator);
+                	validate(lastnameValidator);
+                	validate(firstnameValidator);
+                	validate(emailValidator);
+                	if(formIsValid && (txt_password.text != txt_cpassword.text)){
+	                	formIsValid = false;
+	                	currentState='RegisterError';
+						lbl_register_error.text = "Your passwords do not match";
+	                }
+	                else if(formIsValid){
+	                	currentState='Register';
+						lbl_register_error.text = "";
+	                }
+                }
+                else{
+                	validate(nameValidator);
+                	validate(passwordValidator);
+                }
+            }
+            private function validate(validator:Validator):Boolean
+             {                
+                 var validatorSource:DisplayObject = validator.source as DisplayObject;
+                
+                var suppressEvents:Boolean = (validatorSource != focussedFormControl);
+                
+                var event:ValidationResultEvent = validator.validate(null, suppressEvents); 
+                                
+                // Check if validation passed and return a boolean value accordingly.
+                 var currentControlIsValid:Boolean = (event.type == ValidationResultEvent.VALID);
+                 
+                 // Update the formIsValid flag
+                 formIsValid = formIsValid && currentControlIsValid;
+                 
+                 return currentControlIsValid;
+              }
+
 			public function registerFailure(event:RegisterFailEvent):void{
 				//TODO: Display register failed somewhere
 				currentState='RegisterError';
@@ -69,7 +124,7 @@
             <mx:AddChild relativeTo="{loginForm}" position="lastChild">
                 <mx:target>
                     <mx:FormItem id="confirm" label="Confirm:">
-                        <mx:TextInput id="txt_cpassword" displayAsPassword="true"/>
+                        <mx:TextInput id="txt_cpassword" displayAsPassword="true" change="validateForm(event);"/>
                     </mx:FormItem>
                 </mx:target>
             </mx:AddChild>
@@ -87,17 +142,17 @@
             <mx:SetProperty target="{loginForm}" name="height" value="199"/>
             <mx:AddChild relativeTo="{loginForm}" position="lastChild">
                 <mx:FormItem id="firstname" label="First Name:">
-                    <mx:TextInput id="txt_firstname"/>
+                    <mx:TextInput id="txt_firstname" change="validateForm(event);"/>
                 </mx:FormItem>
             </mx:AddChild>
             <mx:AddChild relativeTo="{loginForm}" position="lastChild">
                 <mx:FormItem id="lastname" label="Last Name:">
-                    <mx:TextInput id="txt_lastname"/>
+                    <mx:TextInput id="txt_lastname" change="validateForm(event);"/>
                 </mx:FormItem>
             </mx:AddChild>
             <mx:AddChild relativeTo="{loginForm}" position="lastChild">
                 <mx:FormItem id="email" label="Email:">
-                    <mx:TextInput id="txt_email"/>
+                    <mx:TextInput id="txt_email" change="validateForm(event);"/>
                 </mx:FormItem>
             </mx:AddChild>
             <mx:SetProperty name="width" value="362"/>
@@ -109,6 +164,7 @@
             <mx:SetProperty target="{loginPanel}" name="layout" value="absolute"/>
             <mx:SetStyle target="{loginForm}" name="horizontalCenter" value="0"/>
             <mx:SetProperty target="{loginForm}" name="width" value="320"/>
+            <mx:SetProperty target="{loginButton}" name="enabled" value="true"/>
         </mx:State>
         <mx:State name="LoginError">
             <mx:AddChild relativeTo="{loginPanel}" position="lastChild">
@@ -126,6 +182,43 @@
             </mx:AddChild>
         </mx:State>
     </mx:states>
+    
+    <mx:EmailValidator
+        id="emailValidator"
+        source="{txt_email}" property="text"
+    />
+    <mx:StringValidator 
+        id="nameValidator"
+        source="{txt_username}" 
+        property="text"
+        minLength="6"
+    />
+    <mx:StringValidator 
+        id="passwordValidator"
+        source="{txt_password}" 
+        property="text"
+        minLength="6"
+    />
+    <mx:StringValidator 
+        id="cpasswordValidator"
+        source="{txt_cpassword}" 
+        property="text"
+        minLength="6"
+    />
+    <mx:StringValidator 
+        id="firstnameValidator"
+        source="{txt_firstname}" 
+        property="text"
+        minLength="2"
+    />
+    <mx:StringValidator 
+        id="lastnameValidator"
+        source="{txt_lastname}" 
+        property="text"
+        minLength="2"
+    />
+
+
 
     <mx:transitions>
         <!-- Define the transition from the base state to the Register state.-->
@@ -164,17 +257,17 @@
 
         <mx:Form id="loginForm" y="46" horizontalCenter="0" width="320">
             <mx:FormItem label="Username:" id="formitem1">
-                <mx:TextInput id="txt_username"/>
+                <mx:TextInput id="txt_username" change="validateForm(event);"/>
             </mx:FormItem>
             <mx:FormItem label="Password:">
-                <mx:TextInput id="txt_password" displayAsPassword="true"/>
+                <mx:TextInput id="txt_password" displayAsPassword="true" change="validateForm(event);"/>
             </mx:FormItem>
         </mx:Form>
         <mx:ControlBar id="controlbar1" x="0" y="170">
             <mx:LinkButton id="registerLink"  label="Need to Register?"
-                click="currentState='Register'"/>
+                click="currentState='Register';validateForm(event);"/>
             <mx:Spacer width="100%" id="spacer1"/>
-            <mx:Button label="Login" id="loginButton" click="doButton();"/>
+            <mx:Button label="Login" id="loginButton" click="doButton();" enabled="{formIsValid}"/>
         </mx:ControlBar>
     </mx:Panel>
 </mx:Canvas>
