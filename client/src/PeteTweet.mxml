@@ -104,6 +104,7 @@
 			public function goToMainPage():void {
 				viewstack1.selectedIndex = 2;
 				//updateTweets();
+				gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
 				gw.call("petetweet.profile", new Responder(gotProfile, gotTweetFault))
 			}
 			
