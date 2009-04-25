@@ -68,7 +68,6 @@
 			}
 			public function goToMainPage():void {
 				viewstack1.selectedIndex = 2;
-				gw.call(API_STATUS, new Responder(statusPass, statusFail));
 				updateTweets();
 				gw.call("petetweet.profile", new Responder(gotProfile, gotTweetFault))
 			}
@@ -115,8 +114,8 @@
 			//TODO:Put this information in a page before the login page
 			public function statusPass(b:Boolean):void {
 				if(b) {
-					goToMainPage();
 					status = true;
+					goToMainPage();
 				}
 				else {
 					viewstack1.selectedIndex = 1;
@@ -139,7 +138,7 @@
 				gw.call(API_LOGIN, new Responder(loginPass, loginFail),username,password);
 			}
 			public function loginPass(userid:int):void {
-				goToMainPage();
+				gw.call(API_STATUS, new Responder(statusPass, statusFail));
 			}
 			public function loginFail(o:Object):void {
 				loginForm.dispatchEvent(new LoginFailEvent(o));
