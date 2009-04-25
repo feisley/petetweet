@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="662">
+							
+	<mx:Script>
+		<![CDATA[
+		import com.adobe.crypto.MD5
+		
+		private function updateHeight(target:Object):void
+			{
+				target.validateNow();
+				target.height = target.textHeight + 30;
+				target.validateSize();
+			}
+			
+			private function gravatarUrl(email:String):String {
+				
+				"http://www.gravatar.com/avatar/917fb9355a5d0593f86472f7fb61df41?s=60&d=identicon&r=G"
+				
+				var gid:String = MD5.hash(email);
+				var url:String = "http://www.gravatar.com/avatar/" + gid + "?s=70&d=identicon&r=G";
+				
+				trace(url);
+				return url;
+			}
+		]]>
+	</mx:Script>
+		<mx:TextArea htmlText="{data.text}" 
+			editable="false" y="48"
+			verticalScrollPolicy="off" updateComplete="updateHeight(event.target)"  fontSize="16" left="10" right="10" alpha="0" backgroundAlpha="0.0"/>
+		<mx:Label text="{data.post_date}" height="24" fontSize="14" y="16" left="10" right="194" fontStyle="italic"/>
+		<mx:Button y="16" label="Reply" right="17"/>
+		   
+</mx:Canvas>
