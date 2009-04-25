@@ -384,6 +384,16 @@
             	
             }
             
+            private function sendMessage():void {
+            	//call api send message
+            	var textToSend:String = messageEditor.htmlText;
+            	gw.call("petetweet.sendmessage",new Responder(gotMessage,gotSearchFault),privMessageList.selectedItem._key,textToSend);
+            }
+            
+            private function gotMessage(o:Object):void {
+            	
+            }
+            
             private function gravatarUrl(email:String, size:int):String {
 				
 				"http://www.gravatar.com/avatar/917fb9355a5d0593f86472f7fb61df41?s=60&d=identicon&r=G"
@@ -506,7 +516,7 @@
 				<mx:Label text="Show More Tweets" bottom="7" right="87"/>
 			</mx:Canvas>
 			<mx:Canvas label="Messaging" width="100%" height="100%">
-				<mx:RichTextEditor y="10" title="" width="421" height="213" x="10" id="messageEditor0"
+				<mx:RichTextEditor y="10" title="" width="421" height="213" x="10" id="messageEditor"
 					creationComplete="customizeMessageEditor();" textAreaStyleName="rteStyle">
 				</mx:RichTextEditor>
 				<mx:TabNavigator bottom="10" top="10" right="10" left="439" id="homeTabs0" creationPolicy="all">
@@ -525,8 +535,9 @@
 					</mx:Canvas>
 				</mx:TabNavigator>
 				<mx:Label x="34" y="15" text="Send a private message to:" fontSize="14"/>
-				<mx:ComboBox x="246" y="15" editable="false" selectedIndex="0" dataProvider="{following}" id="privMessageList" labelField="username"></mx:ComboBox>
+				<mx:ComboBox x="246" y="15" editable="false" selectedIndex="0" dataProvider="{following}" id="privMessageList" labelField="username" width="154"></mx:ComboBox>
 				<mx:Label text="PeteTweet" fontSize="36" bottom="10" left="10"/>
+				<mx:Button x="335" y="192" label="Send" click="sendMessage();"/>
 			</mx:Canvas>
 			<mx:Canvas label="Profile" width="100%" height="100%">
 				<mx:Panel width="365" layout="absolute" title="Profile Editor" top="10" bottom="10" left="10">
