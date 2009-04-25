@@ -7,6 +7,9 @@ import util
 
 def register(username, password, firstname, lastname, email):
     
+    if (len(password) < 6 ):
+        raise ValueError("Your password needs to be at least 6 characters long")
+    
     q = User.all()
     q.filter("username =", username)
     if q.count(1) != 0:
@@ -117,9 +120,9 @@ def search(str):
     q.filter("lastname =", str)
     r3 = set(q.fetch(10))
     
-    # Check lastname
+    # Check email
     q = User.all();
-    q.filter("lastname =", str) 
+    q.filter("email =", str) 
     r4 = set(q.fetch(10))
     
     # Build Result set
@@ -127,14 +130,29 @@ def search(str):
     
     return f;
 
-def profile():
+def getMyProfile():
     if status:
         s = Session();
         q = User.all()
         q.filter("__key__ =", s["user"])
         
         return q.get()
+
+def updateMyProfile(userid, firstname, lastname, email, password):
+
+    q = User.all()
+    q.filter("__key__ =", db.Key(userid))
+    user = q.get()
     
+    user.firstname = firstname
+    user.lastname = lastname
+    user.email = email
+    
+    if (password != None):
+        user.password = util.hashPassword(user.salt, password)
+    
+    #Commit changes to store
+    user.save()
 
 def getProfile(userid):
     

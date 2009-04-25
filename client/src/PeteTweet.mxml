@@ -247,14 +247,14 @@
             	}
             }
             
-            private function gotProfileUpdate(o:Object){
+            private function gotProfileUpdate(o:Object):void {
             	trace("Profile Update Succeeded!");
             	//wipe password fields
             	profilePassword.text = "";
             	profileConfirmPassword.text = "";
             }
             
-            private function gotProfileUpdateFault(o:Object) {
+            private function gotProfileUpdateFault(o:Object):void {
             	trace("Profile Update Failed!");
             }
             
@@ -355,9 +355,9 @@
 					<mx:Canvas id="searchTimeline" label="User Profile" width="100%" height="100%">
 						<mx:ViewStack id="profileStack" right="0" left="0" top="0" bottom="0">
 							<mx:Canvas label="Profile Alert" width="100%" height="100%">
-								<mx:Panel width="374" height="130" layout="absolute" horizontalCenter="0" verticalCenter="0" title="User Profiles">
-									<mx:Text width="334" color="#000000"
-									    text="This is the PeteTweet profile viewer.&#xa;&#xa;Please use the search form to the left to search for a user to view." id="text1" x="10" y="10" height="63" fontWeight="normal"/>
+								<mx:Panel width="374" height="138" layout="absolute" horizontalCenter="0" verticalCenter="0" title="User Profiles">
+									<mx:Text color="#000000"
+									    text="This is the PeteTweet profile viewer.&#xa;&#xa;Please use the search form to the left to search for a user to view. You may also click on a username in the timelines to view that user's profile" id="text1" fontWeight="normal" width="334" x="10" height="78" y="10"/>
 								</mx:Panel>
 							</mx:Canvas>
 							<mx:Canvas label="User Profile" width="100%" height="100%">

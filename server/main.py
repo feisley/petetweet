@@ -29,7 +29,8 @@ services = {
     'petetweet.getusertweets': api.getusertweets,
     'petetweet.getalltweets': api.getalltweets,
     'petetweet.search': api.search,
-    'petetweet.profile': api.profile,
+    'petetweet.profile': api.getMyProfile,
+    'petetweet.updateprofile': api.updateMyProfile,
     'petetweet.getprofile': api.getProfile,
 }
 
