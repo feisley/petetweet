@@ -528,6 +528,7 @@
 								<mx:Label x="108" y="10" text="{currentProfile.username}" fontSize="22" width="262" truncateToFit="true"/>
 								<mx:Button y="20" label="loading..." right="10" enabled="false" id="btn_follow" click="handleFollowClick(currentProfile._key);"/>
 								<mx:Button y="50" label="Private Message" right="10"/>
+								<mx:Button y="78" label="Public Reply" right="10"/>
 								<mx:Label x="108" y="50" text="This user has been a memeber since:"/>
 								<mx:Label x="108" y="66" text="{currentProfile.reg_date}" width="216" fontStyle="italic"/>
 							</mx:Canvas>

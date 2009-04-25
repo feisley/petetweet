@@ -28,6 +28,5 @@
 			editable="false" y="48"
 			verticalScrollPolicy="off" updateComplete="updateHeight(event.target)"  fontSize="16" left="10" right="10" alpha="0" backgroundAlpha="0.0"/>
 		<mx:Label text="{data.post_date}" height="24" fontSize="14" y="16" left="10" right="194" fontStyle="italic"/>
-		<mx:Button y="16" label="Reply" right="17"/>
 		   
 </mx:Canvas>
