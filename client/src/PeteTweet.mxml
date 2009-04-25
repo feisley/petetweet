@@ -68,6 +68,7 @@
 			}
 			public function goToMainPage():void {
 				viewstack1.selectedIndex = 2;
+				gw.call(API_STATUS, new Responder(statusPass, statusFail));
 				updateTweets();
 				gw.call("petetweet.profile", new Responder(gotProfile, gotTweetFault))
 			}
