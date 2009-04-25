@@ -266,6 +266,7 @@
 				//messageEditor.textArea.addEventListener(TextEvent.TEXT_INPUT, gotText);
 				//messageEditor.textArea.maxChars = 256
 				//messageEditor.fontSizeArray = new Array("16", "20");
+				getFriends();
 			}
 			
 			private function updateCount():void {
@@ -295,6 +296,7 @@
             	}	
             }
             private function gotUserTweets(arr:Array):void {
+            	getFriends();
             	searchTweets = new ArrayCollection(arr);
             	homeTabs.selectedIndex = 2;
             	profileStack.selectedIndex = 1;
@@ -378,6 +380,7 @@
             private function gotFriendResults(arr:Array):void {
             	trace("Updataing the following array");
             	following = new ArrayCollection(arr);
+            	
             }
             
             private function gravatarUrl(email:String, size:int):String {
@@ -501,7 +504,7 @@
 				<mx:ComboBox right="10" bottom="5" selectedIndex="0" dataProvider="{numTweetChoices}" change="getMoreTweets();" id="numTweetChoiceMenu"></mx:ComboBox>
 				<mx:Label text="Show More Tweets" bottom="7" right="87"/>
 			</mx:Canvas>
-			<mx:Canvas label="Messaging" width="100%" height="100%" click="getFriends();">
+			<mx:Canvas label="Messaging" width="100%" height="100%">
 				<mx:RichTextEditor y="10" title="" width="421" height="213" x="10" id="messageEditor0"
 					creationComplete="customizeMessageEditor();" textAreaStyleName="rteStyle">
 				</mx:RichTextEditor>
@@ -521,7 +524,7 @@
 					</mx:Canvas>
 				</mx:TabNavigator>
 				<mx:Label x="34" y="15" text="Send a private message to:" fontSize="14"/>
-				<mx:ComboBox x="246" y="15" editable="false" selectedIndex="0" dataProvider="{following}" id="privMessageList"></mx:ComboBox>
+				<mx:ComboBox x="246" y="15" editable="false" selectedIndex="0" dataProvider="{following}" id="privMessageList" labelField="username"></mx:ComboBox>
 				<mx:Label text="PeteTweet" fontSize="36" bottom="10" left="10"/>
 			</mx:Canvas>
 			<mx:Canvas label="Profile" width="100%" height="100%">
