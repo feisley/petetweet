@@ -354,6 +354,12 @@
 				</mx:Panel>
 			</mx:Canvas>
 			<mx:Canvas label="Help" width="100%" height="100%">
+				<mx:Panel layout="absolute" left="10" top="10" bottom="10" width="250" title="Help Documents">
+					<mx:List left="0" right="0" top="0" bottom="0"></mx:List>
+				</mx:Panel>
+				<mx:Panel layout="absolute" right="10" bottom="10" top="10" left="268">
+					<mx:TextArea left="0" right="0" top="0" bottom="0"/>
+				</mx:Panel>
 			</mx:Canvas>
 		</mx:ViewStack>
 		<mx:ApplicationControlBar y="0" height="38" right="0" left="0" dock="true">
