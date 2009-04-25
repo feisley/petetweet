@@ -84,10 +84,15 @@
 				profileList.addEventListener("ViewProfileEvent",viewProfileHandler);
 			}
 			public function viewProfileHandler(event:ViewProfileEvent):void{
-				btn_follow.enabled = false;
-				btn_follow.label="Loading..."
-				getUserTweetsByUID(event.uid);
-				homeTabs.selectedIndex = 2;
+				if(!(userProfile._key == event.uid)){
+					btn_follow.enabled = false;
+					btn_follow.label="Loading..."
+					getUserTweetsByUID(event.uid);
+					homeTabs.selectedIndex = 2;
+				}
+				else{
+					appStack.selectedIndex = 2;
+				}
 			}
 			public function goToMainPage():void {
 				viewstack1.selectedIndex = 2;
