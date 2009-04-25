@@ -304,7 +304,7 @@ def followers():
     
     f = q.fetch(1000)
     
-    return [x.followee for x in f]
+    return [x.follower for x in f]
     
     
 def following():
