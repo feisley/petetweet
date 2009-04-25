@@ -113,6 +113,30 @@ def gettweets(limit = 10):
     q.order("-post_date")
     
     return q.fetch(limit)
+    
+def getfollowedtweets(limit = 10):
+    
+    if limit <= 0 or limit > 1000:
+        raise ValueError("Limit must be from 1 - 1000")
+    
+    s = Session()
+    
+    q = Follow.all()
+    q.filter("follower =", s['user'])
+    followees = q.fetch(1000);
+    
+    logging.info(followees)
+    
+    q = Tweet.all()
+    q.filter("user IN", followees)
+    q.order("-post_date")
+    
+    result = q.fetch(limit)
+    
+    logging.info(result)
+    
+    return result
+    
 
 def search(str):
     
@@ -136,21 +160,19 @@ def search(str):
     q.filter("email =", str) 
     r4 = q.fetch(10)
     
+    keys = set()
+    result = set()
+    
     rx = r1 + r2 + r3 + r4
     
-    logging.info(r1)
-    logging.info(r2)
-    logging.info(r3)
-    logging.info(r4)
+    for r in rx:
+        if r.key() in keys:
+            pass
+        else:
+            keys.add(r.key())
+            result.add(r)
     
-    def f(x):
-        return x.key() in rx
-    
-    # Build Result set
-    f = filter(f, rx)
-    logging.info(f)
-    
-    return r1;
+    return result;
 
 def getMyProfile():
     if status:
@@ -191,6 +213,7 @@ def follow(userid):
     them = db.Key(userid)
     
     f = Follow(follower = me, followee = them)
+    f.save()
     
 
 def unfollow(userid):
@@ -202,9 +225,10 @@ def unfollow(userid):
     q = Follow.all()
     q.filter("follower =", me)
     q.filter("followee =", them)
-    q.get();
+    f = q.get();
     
-    f = Follow(follower = me, followee = them)
+    if f:
+        f.delete()
 
 def checkFollower(userid):
     
@@ -238,11 +262,12 @@ def checkFollowing(userid):
     else:
         return False
 
-def follerwers():
+def followers():
     
     s = Session()
     me = s['user']
     them = db.Key(userid)
+    
     
 def following():
 
@@ -250,4 +275,8 @@ def following():
     me = s['user']
     them = db.Key(userid)
     
+    q = Follow.all()
+    q.filter("follower =", me)
+    
+    return q.fetch(1000)
     

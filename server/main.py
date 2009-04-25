@@ -24,10 +24,14 @@ services = {
     'petetweet.login': api.login,
     'petetweet.logout': api.logout,
     'petetweet.status': api.status,
+    
     'petetweet.post': api.post,
+    
     'petetweet.gettweets': api.gettweets,
     'petetweet.getusertweets': api.getusertweets,
     'petetweet.getalltweets': api.getalltweets,
+    'petetweet.getfollowedtweets': api.getfollowedtweets,
+    
     'petetweet.search': api.search,
     'petetweet.profile': api.getMyProfile,
     'petetweet.updateprofile': api.updateMyProfile,
