@@ -25,14 +25,14 @@
 			import mx.managers.CursorManager;
 			import com.adobe.crypto.SHA256;
 			import com.adobe.crypto.MD5;
-			import mx.validators.Validator;
-			import mx.events.ValidationResultEvent;
 			public var gw:NetConnection = new NetConnection();
 			
 			[Bindable]
 			private var publicTweets:ArrayCollection = new ArrayCollection();
 			[Bindable]
 			private var myTweets:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var friendTweets:ArrayCollection = new ArrayCollection();
 			[Bindable]
 			private var searchTweets:ArrayCollection = new ArrayCollection();
 			
@@ -131,6 +131,11 @@
 			public function gotMyTweets(arr:Array):void {
 				myTweets = new ArrayCollection(arr);
 			}
+			
+			public function gotFriendTweets(arr:Array):void {
+				friendTweets = new ArrayCollection(arr);
+			}
+			
 			public function gotTweetFault(o:Object):void{
 				trace("Tweet get all failed");
 			}
@@ -138,6 +143,7 @@
 				gw.call(API_GETALL, new Responder(gotPublicTweets, gotTweetFault),numTweets);
 				if (status) {
 					gw.call("petetweet.gettweets", new Responder(gotMyTweets, gotTweetFault),numTweets);
+					gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
 				}
 			}
 			
@@ -149,6 +155,7 @@
 				if (status) {
 					trace("passed the status check");
 					gw.call("petetweet.gettweets", new Responder(gotMyTweets, gotTweetFault),numTweets);
+					gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
 				}
 			}
 			//--------------------END TWEET FUNCTIONS----------------------------------
@@ -241,44 +248,6 @@
 				trace("Post Failed");
 			}
 			//-----------------END SEARCH FUNCTIONS-------------------------------
-			
-			//-----------------PROFILE ERROR FUNCTIONS-------------------------------
-			private function validateForm(event:Event):void 
-            {                    
-                // Save a reference to the currently focussed form control
-                // so that the isValid() helper method can notify only
-                // the currently focussed form control and not affect
-                // any of the other form controls.
-                focussedFormControl = event.target as DisplayObject;    
-
-                // Mark the form as valid to start with                
-                formIsValid = true;
-                            
-            	validate(emailValidator);
-            	validate(firstnameValidator);
-            	validate(lastnameValidator);
-            	if(profilePassword.text != ""){
-	            	validate(passwordValidator);
-	            	validate(cpasswordValidator);
-            	}
-            }
-            private function validate(validator:Validator):Boolean
-             {                
-                 var validatorSource:DisplayObject = validator.source as DisplayObject;
-                
-                var suppressEvents:Boolean = (validatorSource != focussedFormControl);
-                
-                var event:ValidationResultEvent = validator.validate(null, suppressEvents); 
-                                
-                // Check if validation passed and return a boolean value accordingly.
-                 var currentControlIsValid:Boolean = (event.type == ValidationResultEvent.VALID);
-                 
-                 // Update the formIsValid flag
-                 formIsValid = formIsValid && currentControlIsValid;
-                 
-                 return currentControlIsValid;
-              }
-			//-----------------END PROFILE ERROR FUNCTIONS-------------------------------
 			
 			public function customizeEditor():void {
 				tweetEditor.toolbar.removeChild(tweetEditor.bulletButton);
@@ -472,6 +441,15 @@
 						</mx:List>
 					</mx:Canvas>
 					<mx:Canvas label="My Friends" width="100%" height="100%">
+						<mx:List dataProvider="{friendTweets}" variableRowHeight="true" right="0" left="0" top="0" bottom="0">
+							<mx:itemRenderer>
+								<mx:Component>
+									<petetweet:TweetRenderer>
+										
+									</petetweet:TweetRenderer>
+								        	</mx:Component>
+							</mx:itemRenderer>
+						</mx:List>
 					</mx:Canvas>
 					<mx:Canvas id="searchTimeline" label="User Profile" width="100%" height="100%">
 						<mx:ViewStack id="profileStack" right="0" left="0" top="0" bottom="0">
@@ -538,17 +516,17 @@
 					<mx:Label x="89" y="18" text="{userProfile.firstname}" fontSize="19" width="146" truncateToFit="true"/>
 					<mx:Image x="243" y="10" width="90" height="90" source="{gravatarUrl(userProfile.email, 90)}"/>
 					<mx:Label x="10" y="114" text="First Name:"/>
-					<mx:TextInput x="10" y="140" width="242" text="{userProfile.firstname}" id="profileFirstName" change="validateForm(event);"/>
+					<mx:TextInput x="10" y="140" width="242" text="{userProfile.firstname}" id="profileFirstName"/>
 					<mx:Label x="10" y="170" text="Last Name:"/>
-					<mx:TextInput x="10" y="196" width="242" text="{userProfile.lastname}" id="profileLastName" change="validateForm(event);"/>
+					<mx:TextInput x="10" y="196" width="242" text="{userProfile.lastname}" id="profileLastName"/>
 					<mx:Label x="10" y="252" text="Email Address:"/>
-					<mx:TextInput x="10" y="278" width="242" text="{userProfile.email}" id="profileEmail" change="validateForm(event);"/>
+					<mx:TextInput x="10" y="278" width="242" text="{userProfile.email}" id="profileEmail"/>
 					<mx:Label x="10" y="328" text="Password:"/>
-					<mx:TextInput x="10" y="354" width="242" id="profilePassword" displayAsPassword="true" change="validateForm(event);"/>
+					<mx:TextInput x="10" y="354" width="242" id="profilePassword" displayAsPassword="true"/>
 					<mx:Label x="10" y="384" text="Confirm:"/>
-					<mx:TextInput x="10" y="410" width="242" id="profileConfirmPassword" displayAsPassword="true" change="validateForm(event);"/>
+					<mx:TextInput x="10" y="410" width="242" id="profileConfirmPassword" displayAsPassword="true"/>
 					<mx:Button x="89" label="Reset" bottom="10" click="doReset();"/>
-					<mx:Button x="180" label="Change!" bottom="10" click="updateUserProfile();" enabled="{formIsValid}"/>
+					<mx:Button x="180" label="Change!" bottom="10" click="updateUserProfile();"/>
 					<mx:LinkButton x="228" y="106" label="(Get a Gravatar)" 
 						click="var u:URLRequest = new URLRequest('http://gravatar.com'); navigateToURL(u,'_blank'); "/>
 					<mx:Label x="10" y="55" text="You have been a memeber since:"/>
@@ -598,34 +576,5 @@
 		</mx:ApplicationControlBar>
 		</mx:Canvas>
 	</mx:ViewStack>
-	
-	<mx:EmailValidator
-        id="emailValidator"
-        source="{profileEmail}" property="text"
-    />
-    <mx:StringValidator 
-        id="passwordValidator"
-        source="{profilePassword}" 
-        property="text"
-        minLength="6"
-    />
-    <mx:StringValidator 
-        id="cpasswordValidator"
-        source="{profileConfirmPassword}" 
-        property="text"
-        minLength="6"
-    />
-    <mx:StringValidator 
-        id="firstnameValidator"
-        source="{profileFirstName}" 
-        property="text"
-        minLength="2"
-    />
-    <mx:StringValidator 
-        id="lastnameValidator"
-        source="{profileLastName}" 
-        property="text"
-        minLength="2"
-    />
 	
 </mx:Application>

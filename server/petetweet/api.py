@@ -123,16 +123,18 @@ def getfollowedtweets(limit = 10):
     
     q = Follow.all()
     q.filter("follower =", s['user'])
-    followees = q.fetch(1000);
+    follow = q.fetch(1000);
     
-    logging.info(followees)
+    result = []
     
-    q = Tweet.all()
-    q.filter("user IN", followees)
-    q.order("-post_date")
-    
-    result = q.fetch(limit)
-    
+    for f in follow:
+            q = Tweet.all()
+            q.filter("user =", f.followee)
+            q.order("-post_date")
+            r = q.fetch(limit)
+            logging.info(r)
+            result += r
+
     logging.info(result)
     
     return result
@@ -267,6 +269,11 @@ def followers():
     s = Session()
     me = s['user']
     them = db.Key(userid)
+    
+    q = Follow.all()
+    q.filter("followee =", me)
+    
+    return q.fetch(1000)
     
     
 def following():
