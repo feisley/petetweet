@@ -29,7 +29,7 @@
 			verticalScrollPolicy="off" updateComplete="updateHeight(event.target)"  fontSize="16" left="96" right="10" alpha="0" backgroundAlpha="0.0"/>
 		<mx:Image x="10" y="10" width="70" height="70" source="{gravatarUrl(data.user.email)}" >
 		</mx:Image>
-		<mx:Label y="5" text="{data.user.username}" height="38" fontSize="22" fontWeight="bold" right="108" left="96"/>
+		<mx:Label y="5" text="{data.user.username}" height="38" fontSize="22" fontWeight="bold" left="96"/>
 		<mx:Label text="{data.post_date}" height="24" fontSize="16" y="35" left="96" right="108" fontStyle="italic"/>
 		   
 </mx:Canvas>
