@@ -35,7 +35,7 @@ def login(username, password):
     user = q.get()
 
     if not user:
-        raise ValueError("Invalid username")
+        raise ValueError("Invalid username or password")
 
     hash = util.hashPassword(user.salt, password)
     
