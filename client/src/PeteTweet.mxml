@@ -43,6 +43,9 @@
 			public var searchResults:ArrayCollection = new ArrayCollection();
 			
 			[Bindable]
+			public var following:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
 			public var currentProfile:Object = new Object();
 			
 			[Bindable]
@@ -150,7 +153,6 @@
 			public function getMoreTweets():void {
 				trace("Trying to get more tweets!");
 				numTweets = numTweetChoiceMenu.selectedItem.valueOf();
-				//More button was clicked to increase numTweets to get
 				gw.call(API_GETALL, new Responder(gotPublicTweets, gotTweetFault),numTweets);
 				if (status) {
 					trace("passed the status check");
@@ -366,6 +368,16 @@
             	}
             }
             
+            private function getFriends():void {
+            	trace("call following");
+				gw.call("petetweet.following", new Responder(gotFriendResults, gotSearchFault));
+            }
+            
+            private function gotFriendResults(arr:Array):void {
+            	trace("Updataing the following array");
+            	following = new ArrayCollection(arr);
+            }
+            
             private function gravatarUrl(email:String, size:int):String {
 				
 				"http://www.gravatar.com/avatar/917fb9355a5d0593f86472f7fb61df41?s=60&d=identicon&r=G"
@@ -487,7 +499,7 @@
 				<mx:ComboBox right="10" bottom="5" selectedIndex="0" dataProvider="{numTweetChoices}" change="getMoreTweets();" id="numTweetChoiceMenu"></mx:ComboBox>
 				<mx:Label text="Show More Tweets" bottom="7" right="87"/>
 			</mx:Canvas>
-			<mx:Canvas label="Messaging" width="100%" height="100%">
+			<mx:Canvas label="Messaging" width="100%" height="100%" click="getFriends();">
 				<mx:RichTextEditor y="10" title="" width="421" height="213" x="10" id="messageEditor0"
 					creationComplete="customizeMessageEditor();" textAreaStyleName="rteStyle">
 				</mx:RichTextEditor>
@@ -507,7 +519,7 @@
 					</mx:Canvas>
 				</mx:TabNavigator>
 				<mx:Label x="34" y="15" text="Send a private message to:" fontSize="14"/>
-				<mx:ComboBox x="246" y="15" editable="false"></mx:ComboBox>
+				<mx:ComboBox x="246" y="15" editable="false" selectedIndex="0" dataProvider="{following}" id="privMessageList"></mx:ComboBox>
 				<mx:Label text="PeteTweet" fontSize="36" bottom="10" left="10"/>
 			</mx:Canvas>
 			<mx:Canvas label="Profile" width="100%" height="100%">
