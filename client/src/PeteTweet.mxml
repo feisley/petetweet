@@ -173,6 +173,7 @@
 				trace("Post Passed");
 				updateTweets();
 				tweetEditor.text = "";
+				updateCount();
 				
 			}
 			public function postFail(o:Object):void{
