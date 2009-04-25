@@ -22,6 +22,7 @@
 			import com.petetweet.client.events.*;
 			import mx.rpc.events.FaultEvent;
 			import mx.controls.Alert;
+			import mx.managers.CursorManager;
 			import com.adobe.crypto.SHA256;
 			import com.adobe.crypto.MD5;
 			public var gw:NetConnection = new NetConnection();
@@ -77,6 +78,8 @@
 			}
 			
 			public function gotProfile(p:Object):void {
+				profilePassword.text = "";
+            	profileConfirmPassword.text = "";
 				userProfile = p;
 			}
 			
@@ -133,6 +136,7 @@
 			
 			//--------------------LOGIN FUNCTIONS----------------------------------
 			public function loginHandler(event:LoginEvent):void {
+				CursorManager.setBusyCursor();
 				processLogin(event.username, event.password);
 				trace("Got login: "+event.username);
 			}
@@ -143,9 +147,11 @@
 			}
 			public function loginPass(userid:int):void {
 				gw.call(API_STATUS, new Responder(statusPass, statusFail));
+				CursorManager.removeBusyCursor();
 			}
 			public function loginFail(o:Object):void {
 				loginForm.dispatchEvent(new LoginFailEvent(o));
+				CursorManager.removeBusyCursor();
 			}
 			//-----------------END LOGIN FUCTIONS-----------------------------------
 			
@@ -243,7 +249,9 @@
             		}
             	}
             	else{
-            		Alert.show("Passwords you gave did not match!");
+            		Alert.show("The passwords you gave did not match!");
+            		profilePassword.text = "";
+            		profileConfirmPassword.text = "";
             	}
             }
             
@@ -252,10 +260,16 @@
             	//wipe password fields
             	profilePassword.text = "";
             	profileConfirmPassword.text = "";
+            	Alert.show("Your profile was successfully updated!");
             }
             
             private function gotProfileUpdateFault(o:Object):void {
             	trace("Profile Update Failed!");
+            	Alert.show("Profile Update Failed!");
+            }
+            
+            private function doReset():void {
+            	gw.call("petetweet.profile", new Responder(gotProfile, gotTweetFault));
             }
             
             private function gotText(evt:TextEvent):void {
@@ -309,7 +323,7 @@
 		</mx:Canvas>
 		<mx:Canvas label="loading" width="100%" height="50%">
 		
-		<mx:ViewStack id="appStack" left="0" right="0" top="39" bottom="0" selectedIndex="0">
+		<mx:ViewStack id="appStack" left="0" right="0" top="39" bottom="0" selectedIndex="0" creationPolicy="all">
 			<mx:Canvas label="Home Page" width="100%" height="100%">
 				<mx:RichTextEditor y="10" title="What are you doing?" width="421" height="213" x="10" id="tweetEditor"
 					creationComplete="customizeEditor();"  change="updateCount();" textAreaStyleName="rteStyle">
@@ -391,7 +405,7 @@
 					<mx:TextInput x="10" y="354" width="242" id="profilePassword" displayAsPassword="true"/>
 					<mx:Label x="10" y="384" text="Confirm:"/>
 					<mx:TextInput x="10" y="410" width="242" id="profileConfirmPassword" displayAsPassword="true"/>
-					<mx:Button x="89" label="Reset" bottom="10"/>
+					<mx:Button x="89" label="Reset" bottom="10" click="doReset();"/>
 					<mx:Button x="180" label="Change!" bottom="10" click="updateUserProfile();"/>
 					<mx:LinkButton x="228" y="106" label="(Get a Gravatar)" 
 						click="var u:URLRequest = new URLRequest('http://gravatar.com'); navigateToURL(u,'_blank'); "/>
