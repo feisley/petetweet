@@ -554,17 +554,23 @@
 					<mx:Label x="10" y="55" text="You have been a memeber since:"/>
 					<mx:Label x="10" y="73" text="{userProfile.reg_date}" width="216" fontStyle="italic"/>
 				</mx:Panel>
-				<mx:Panel layout="absolute" left="383" right="10" top="10" bottom="10" title="My Tweets">
-					<mx:List dataProvider="{myTweets}" variableRowHeight="true" left="0" right="0" top="0" bottom="0">
-						<mx:itemRenderer>
-							<mx:Component>
-								<petetweet:ProfileTweetRenderer>
-									
-								</petetweet:ProfileTweetRenderer>
-							        	</mx:Component>
-						</mx:itemRenderer>
-					</mx:List>
-				</mx:Panel>
+				<mx:TabNavigator top="10" bottom="10" left="383" right="10">
+					<mx:Canvas label="My Tweets" width="100%" height="100%">
+						<mx:List dataProvider="{myTweets}" variableRowHeight="true" bottom="0" top="0" left="0" right="0">
+							<mx:itemRenderer>
+								<mx:Component>
+									<petetweet:ProfileTweetRenderer>
+										
+									</petetweet:ProfileTweetRenderer>
+								        	</mx:Component>
+							</mx:itemRenderer>
+						</mx:List>
+					</mx:Canvas>
+					<mx:Canvas label="Following" width="100%" height="100%">
+					</mx:Canvas>
+					<mx:Canvas label="Followers" width="100%" height="100%">
+					</mx:Canvas>
+				</mx:TabNavigator>
 			</mx:Canvas>
 			<mx:Canvas label="About" width="100%" height="100%">
 				<mx:Panel layout="absolute" title="About PeteTweet!" width="432" height="240" horizontalCenter="0" verticalCenter="0">
