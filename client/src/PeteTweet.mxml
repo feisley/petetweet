@@ -97,10 +97,23 @@
 				profileList.addEventListener("ViewProfileEvent",viewProfileHandler);
 				friendsList.addEventListener("ViewProfileEvent",viewProfileHandler);
 			}
+			public function messageListInit():void{
+				messageInbox.addEventListener("ReplyEvent",replyHandler);
+			}
 			public function profileListInit():void{
 				followingUsers.addEventListener("UnfollowUserEvent",unfollowUserHandler);
 			}
-			private function unfollowUserHandler(event:UnfollowUserEvent):void{
+			public function replyHandler(event:ReplyEvent):void{
+				for(var i:int = 0;i < following.length; i++){
+					var temp:Object = following.getItemAt(i);
+					if(temp.username == event.username){
+						privMessageList.selectedIndex = i;
+						messageEditor.textArea.setFocus();
+						break;
+					}
+				}
+			}
+			public function unfollowUserHandler(event:UnfollowUserEvent):void{
 				gw.call("petetweet.unfollow", new Responder(gotResponse, gotTweetFault), event.uid);
 				getFriends();
 			}
@@ -558,7 +571,7 @@
 								        	</mx:Component>
 							</mx:itemRenderer>
 						</mx:List>
-						<mx:List dataProvider="{receivedMessages}" id="messageInbox" variableRowHeight="true" right="0" left="0" top="0" bottom="0" creationComplete="listInit();">
+						<mx:List dataProvider="{receivedMessages}" id="messageInbox" variableRowHeight="true" right="0" left="0" top="0" bottom="0" creationComplete="messageListInit();">
 							<mx:itemRenderer>
 								<mx:Component>
 									<petetweet:MessageRenderer>

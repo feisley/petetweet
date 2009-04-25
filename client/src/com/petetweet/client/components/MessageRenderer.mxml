@@ -27,6 +27,10 @@
 			private function viewProfile(uid:String):void{
 				dispatchEvent(new ViewProfileEvent(uid));
 			}
+			
+			private function sendReply(user:String):void{
+				dispatchEvent(new ReplyEvent(user));
+			}
 		]]>
 	</mx:Script>
 		<mx:TextArea htmlText="{data.text}" 
@@ -36,6 +40,6 @@
 		</mx:Image>
 		<mx:Label useHandCursor="true" buttonMode="true" mouseChildren="false" y="5" text="{data.sender.username}" height="38" fontSize="22" fontWeight="bold" left="96" click="viewProfile(data.user._key);"/>
 		<mx:Label text="{data.send_date}" height="24" fontSize="16" y="35" left="96" right="108" fontStyle="italic"/>
-		<mx:Button y="16" label="Reply" right="17"/>
+		<mx:Button y="16" label="Reply" right="17" click="sendReply(data.sender.username);"/>
 		   
 </mx:Canvas>
