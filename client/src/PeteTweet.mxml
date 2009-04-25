@@ -46,6 +46,9 @@
 			public var following:ArrayCollection = new ArrayCollection();
 			
 			[Bindable]
+			public var followers:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
 			public var sentMessages:ArrayCollection = new ArrayCollection();
 			
 			[Bindable]
@@ -95,7 +98,12 @@
 			}
 			public function listInit():void{
 				profileList.addEventListener("ViewProfileEvent",viewProfileHandler);
+				profileList.addEventListener("TweetReplyEvent",tweetReplyHandler);
 				friendsList.addEventListener("ViewProfileEvent",viewProfileHandler);
+			}
+			public function tweetReplyHandler(event:TweetReplyEvent):void{
+				tweetEditor.text = "@"+event.username;
+				tweetEditor.textArea.setFocus();
 			}
 			public function messageListInit():void{
 				messageInbox.addEventListener("ReplyEvent",replyHandler);
@@ -317,10 +325,16 @@
 			}
 			
 			private function getUserTweets():void {
-				profileLoading();
-				gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
-         		gw.call("petetweet.getprofile", new Responder(gotUserProfile, gotTweetFault), searchGrid.selectedItem._key);
-         		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), searchGrid.selectedItem._key);
+				if(userProfile._key != searchGrid.selectedItem._key){
+					profileLoading();
+					gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
+	         		gw.call("petetweet.getprofile", new Responder(gotUserProfile, gotTweetFault), searchGrid.selectedItem._key);
+	         		gw.call("petetweet.checkfollowing", new Responder(gotUserFollowing, gotTweetFault), searchGrid.selectedItem._key);
+	         		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), searchGrid.selectedItem._key);
+         		}
+         		else{
+         			appStack.selectedIndex = 2;
+         		}
             }
             private function getUserTweetsByUID(uid:String):void{
             	profileLoading();
@@ -420,10 +434,16 @@
             	trace("call following");
 				gw.call("petetweet.following", new Responder(gotFriendResults, gotSearchFault));
             }
+            private function getFollowing():void{
+            	gw.call("petetweet.followers", new Responder(gotFollowerResults, gotSearchFault));
+            }
             
             private function gotFriendResults(arr:Array):void {
             	trace("Updataing the following array");
             	following = new ArrayCollection(arr);
+            }
+            private function gotFollowerResults(arr:Array):void{
+            	followers = new ArrayCollection(arr);
             }
             
             private function sendMessage():void {
@@ -659,6 +679,15 @@
 						</mx:List>
 					</mx:Canvas>
 					<mx:Canvas label="Followers" width="100%" height="100%">
+						<mx:List dataProvider="{followers}" variableRowHeight="true" bottom="0" top="0" left="0" right="0" creationComplete="getFollowing();">
+							<mx:itemRenderer>
+								<mx:Component>
+									<petetweet:UserFollowerRenderer>
+										
+									</petetweet:UserFollowerRenderer>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:List>
 					</mx:Canvas>
 				</mx:TabNavigator>
 			</mx:Canvas>
