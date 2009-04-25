@@ -191,7 +191,7 @@
         id="nameValidator"
         source="{txt_username}" 
         property="text"
-        minLength="6"
+        minLength="3"
     />
     <mx:StringValidator 
         id="passwordValidator"
