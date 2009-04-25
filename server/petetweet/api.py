@@ -135,5 +135,12 @@ def profile():
         
         return q.get()
     
+
+def getProfile(userid):
+    
+    q = User.all()
+    q.filter("__key__ =", db.Key(userid))
+    
+    return q.get()
     
     

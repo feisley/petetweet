@@ -38,6 +38,9 @@
 			[Bindable]
 			public var searchResults:ArrayCollection = new ArrayCollection();
 			
+			[Bindable]
+			public var currentProfile:Object = new Object();
+			
 			public var status:Boolean = false;
 			public var t:Timer = new Timer(60000);
 			
@@ -211,11 +214,16 @@
 			
 			private function getUserTweets():void {
          		gw.call("petetweet.getusertweets", new Responder(gotUserTweets, gotTweetFault), searchGrid.selectedItem._key);
+         		gw.call("petetweet.getprofile", new Responder(gotUserProfile, gotTweetFault), searchGrid.selectedItem._key);
             }
             
             private function gotUserTweets(arr:Array):void {
             	searchTweets = new ArrayCollection(arr);
             	profileStack.selectedIndex = 1;
+            }
+            
+            private function gotUserProfile(o:Object):void {
+            	currentProfile = o;
             }
             
             private function gotText(evt:TextEvent):void {
@@ -321,15 +329,21 @@
 								</mx:Panel>
 							</mx:Canvas>
 							<mx:Canvas label="User Profile" width="100%" height="100%">
-								<mx:List dataProvider="{searchTweets}" variableRowHeight="true" bottom="0" top="150" right="0" left="0">
+								<mx:List dataProvider="{searchTweets}" variableRowHeight="true" bottom="0" top="108" right="0" left="0">
 									<mx:itemRenderer>
 										<mx:Component>
-											<petetweet:TweetRenderer>
+											<petetweet:ProfileTweetRenderer>
 												
-											</petetweet:TweetRenderer>
-										        	</mx:Component>
+											</petetweet:ProfileTweetRenderer>
+										</mx:Component>
 									</mx:itemRenderer>
 								</mx:List>
+								<mx:Image x="10" y="10" width="90" height="90" source="{gravatarUrl(currentProfile.email, 90)}"/>
+								<mx:Label x="108" y="10" text="{currentProfile.username}" fontSize="22" width="262" truncateToFit="true"/>
+								<mx:Button y="20" label="Follow this User" right="10"/>
+								<mx:Button y="50" label="Private Message" right="10"/>
+								<mx:Label x="108" y="50" text="This user has been a memeber since:"/>
+								<mx:Label x="108" y="66" text="{currentProfile.reg_date}" width="216" fontStyle="italic"/>
 							</mx:Canvas>
 						</mx:ViewStack>
 					</mx:Canvas>
