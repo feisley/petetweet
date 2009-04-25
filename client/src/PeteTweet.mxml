@@ -48,6 +48,10 @@
 			[Bindable]
             public var formIsValid:Boolean = false;
     
+    		[Bindable]
+    		public var numTweets:int = 10;
+    		
+    		public var numTweetChoices:Array = new Array(10,20,50,100);
             // Holds a reference to the currently focussed 
             // control on the form.
             private var focussedFormControl:DisplayObject;
@@ -132,12 +136,22 @@
 				trace("Tweet get all failed");
 			}
 			public function updateTweets():void {
-				gw.call(API_GETALL, new Responder(gotPublicTweets, gotTweetFault));
+				gw.call(API_GETALL, new Responder(gotPublicTweets, gotTweetFault),numTweets);
 				if (status) {
-					gw.call("petetweet.gettweets", new Responder(gotMyTweets, gotTweetFault));
+					gw.call("petetweet.gettweets", new Responder(gotMyTweets, gotTweetFault),numTweets);
 				}
 			}
 			
+			public function getMoreTweets():void {
+				trace("Trying to get more tweets!");
+				numTweets = numTweetChoiceMenu.selectedItem.valueOf();
+				//More button was clicked to increase numTweets to get
+				gw.call(API_GETALL, new Responder(gotPublicTweets, gotTweetFault),numTweets);
+				if (status) {
+					trace("passed the status check");
+					gw.call("petetweet.gettweets", new Responder(gotMyTweets, gotTweetFault),numTweets);
+				}
+			}
 			//--------------------END TWEET FUNCTIONS----------------------------------
 			
 			//--------------------STATUS FUNCTIONS----------------------------------
@@ -273,7 +287,14 @@
 				tweetEditor.textArea.addEventListener(TextEvent.TEXT_INPUT, gotText);
 				tweetEditor.textArea.maxChars = 256
 				tweetEditor.fontSizeArray = new Array("16", "20");
-				
+			}
+			
+			public function customizeMessageEditor():void {
+				//messageEditor.toolbar.removeChild(messageEditor.bulletButton);
+				//messageEditor.toolbar.removeChild(messageEditor.alignButtons);
+				//messageEditor.textArea.addEventListener(TextEvent.TEXT_INPUT, gotText);
+				//messageEditor.textArea.maxChars = 256
+				//messageEditor.fontSizeArray = new Array("16", "20");
 			}
 			
 			private function updateCount():void {
@@ -436,7 +457,7 @@
 					<mx:Button label="View User's Profile" click="getUserTweets();" bottom="10" right="10"/>
 					<mx:Button label="Clear Results" click="searchResults.removeAll();" bottom="10" left="10"/>
 				</mx:Panel>
-				<mx:TabNavigator bottom="10" top="10" right="10" left="439" id="homeTabs" creationPolicy="all">
+				<mx:TabNavigator bottom="30" top="11" right="9" left="440" id="homeTabs" creationPolicy="all">
 					<mx:Canvas label="Public Timeline" width="100%" height="100%">
 						<mx:List dataProvider="{publicTweets}" id="profileList" variableRowHeight="true" right="0" left="0" top="0" bottom="0" creationComplete="profileListInit();">
 							<mx:itemRenderer>
@@ -480,8 +501,31 @@
 				</mx:TabNavigator>
 				<mx:Label x="217" y="17" text="Remaining Characters:"/>
 				<mx:Label x="364" y="17" text="256" fontSize="10" fontWeight="bold" id="remainingChars"/>
+				<mx:ComboBox right="10" bottom="5" selectedIndex="0" dataProvider="{numTweetChoices}" change="getMoreTweets();" id="numTweetChoiceMenu"></mx:ComboBox>
+				<mx:Label text="Show More Tweets" bottom="7" right="87"/>
 			</mx:Canvas>
 			<mx:Canvas label="Messaging" width="100%" height="100%">
+				<mx:RichTextEditor y="10" title="" width="421" height="213" x="10" id="messageEditor0"
+					creationComplete="customizeMessageEditor();" textAreaStyleName="rteStyle">
+				</mx:RichTextEditor>
+				<mx:TabNavigator bottom="10" top="10" right="10" left="439" id="homeTabs0" creationPolicy="all">
+					<mx:Canvas label="Inbox" width="100%" height="100%">
+						<mx:List variableRowHeight="true" right="0" left="0" top="0" bottom="0">
+							<mx:itemRenderer>
+								<mx:Component>
+									<petetweet:TweetRenderer>
+										
+									</petetweet:TweetRenderer>
+								        	</mx:Component>
+							</mx:itemRenderer>
+						</mx:List>
+					</mx:Canvas>
+					<mx:Canvas label="Sent" width="100%" height="100%">
+					</mx:Canvas>
+				</mx:TabNavigator>
+				<mx:Label x="34" y="15" text="Send a private message to:" fontSize="14"/>
+				<mx:ComboBox x="246" y="15" editable="false"></mx:ComboBox>
+				<mx:Label text="PeteTweet" fontSize="36" bottom="10" left="10"/>
 			</mx:Canvas>
 			<mx:Canvas label="Profile" width="100%" height="100%">
 				<mx:Panel width="365" layout="absolute" title="Profile Editor" top="10" bottom="10" left="10">
