@@ -33,6 +33,6 @@
 		<mx:Label text="{data.username}" height="33" fontSize="22" y="10" left="108" right="327" fontStyle="normal" fontWeight="bold"/>
 		<mx:Label text="{data.firstname} {data.lastname}" height="24" fontSize="14" y="42" left="108" right="327" fontStyle="italic"/>
 		<mx:Image width="90" height="90" source="{gravatarUrl(data.email,90)}" x="10" verticalCenter="0"/>
-		<mx:Button y="34" label="Stop Following" enabled="true" id="btn_follow" right="30" click="unfollowUser(data._key);"/>
+		<mx:Button y="20" label="Stop Following" enabled="true" id="btn_follow" right="10" click="unfollowUser(data._key);"/>
 		   
 </mx:Canvas>
