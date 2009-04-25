@@ -140,7 +140,8 @@
 				//updateTweets();
 				gw.call("petetweet.getfollowedtweets", new Responder(gotFriendTweets, gotTweetFault),numTweets);
 				gw.call("petetweet.gettweets", new Responder(gotMyTweets, gotTweetFault),numTweets);
-				gw.call("petetweet.profile", new Responder(gotProfile, gotTweetFault))
+				gw.call("petetweet.profile", new Responder(gotProfile, gotTweetFault));
+				getFriends();
 			}
 			
 			public function gotProfile(p:Object):void {
