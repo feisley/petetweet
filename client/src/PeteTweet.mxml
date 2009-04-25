@@ -230,10 +230,17 @@
             
             private function updateUserProfile():void {
             	if(profilePassword.text == profileConfirmPassword.text){
-            	gw.call("petetweet.updateprofile", 
-            		new Responder(gotProfileUpdate, gotProfileUpdateFault), 
-            		userProfile._key, profileFirstName.text, profileLastName.text, profileEmail.text,
-            		SHA256.hash(profilePassword.text));
+            		if(profilePassword.text == ""){
+            			gw.call("petetweet.updateprofile", 
+            				new Responder(gotProfileUpdate, gotProfileUpdateFault), 
+            				userProfile._key, profileFirstName.text, profileLastName.text, profileEmail.text, null);
+            		}
+            		else {
+		            	gw.call("petetweet.updateprofile", 
+		            		new Responder(gotProfileUpdate, gotProfileUpdateFault), 
+		            		userProfile._key, profileFirstName.text, profileLastName.text, profileEmail.text,
+		            		SHA256.hash(profilePassword.text));
+            		}
             	}
             	else{
             		Alert.show("Passwords you gave did not match!");
@@ -242,6 +249,9 @@
             
             private function gotProfileUpdate(o:Object){
             	trace("Profile Update Succeeded!");
+            	//wipe password fields
+            	profilePassword.text = "";
+            	profileConfirmPassword.text = "";
             }
             
             private function gotProfileUpdateFault(o:Object) {
