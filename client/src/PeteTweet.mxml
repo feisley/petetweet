@@ -102,7 +102,9 @@
 				friendsList.addEventListener("ViewProfileEvent",viewProfileHandler);
 			}
 			public function tweetReplyHandler(event:TweetReplyEvent):void{
-				tweetEditor.text = "@"+event.username;
+				tweetEditor.text = "@"+event.username + " ";
+				tweetEditor.textArea.selectionBeginIndex = tweetEditor.textArea.text.length;
+				tweetEditor.textArea.selectionEndIndex = tweetEditor.textArea.text.length;
 				tweetEditor.textArea.setFocus();
 			}
 			public function messageListInit():void{
