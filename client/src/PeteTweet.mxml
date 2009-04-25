@@ -21,6 +21,7 @@
 			import mx.collections.ArrayCollection;
 			import com.petetweet.client.events.*;
 			import mx.rpc.events.FaultEvent;
+			import mx.controls.Alert;
 			import com.adobe.crypto.SHA256;
 			import com.adobe.crypto.MD5;
 			public var gw:NetConnection = new NetConnection();
@@ -227,18 +228,23 @@
             }
             
             private function updateUserProfile():void {
+            	if(profilePassword.text == profileConfirmPassword.text){
             	gw.call("petetweet.updateprofile", 
             		new Responder(gotProfileUpdate, gotProfileUpdateFault), 
-            		userProfile._key, userProfile.firstname, userProfile.lastname, userProfile.email,
+            		userProfile._key, profileFirstName.text, profileLastName.text, profileEmail.text,
             		SHA256.hash(profilePassword.text));
+            	}
+            	else{
+            		Alert.show("Passwords you gave did not match!");
+            	}
             }
             
-            private function gotProfileUpdate(){
-            	
+            private function gotProfileUpdate(o:Object){
+            	trace("Profile Update Succeeded!");
             }
             
             private function gotProfileUpdateFault(o:Object) {
-            	
+            	trace("Profile Update Failed!");
             }
             
             private function gotText(evt:TextEvent):void {
@@ -379,11 +385,11 @@
 					<mx:Label x="10" y="384" text="Confirm:"/>
 					<mx:Label x="10" y="252" text="Email Address:"/>
 					<mx:Label x="10" y="170" text="Last Name:"/>
-					<mx:TextInput x="10" y="354" width="242" id="profilePassword"/>
-					<mx:TextInput x="10" y="140" width="242" text="{userProfile.firstname}"/>
-					<mx:TextInput x="10" y="410" width="242"/>
-					<mx:TextInput x="10" y="278" width="242" text="{userProfile.email}"/>
-					<mx:TextInput x="10" y="196" width="242" text="{userProfile.lastname}"/>
+					<mx:TextInput x="10" y="354" width="242" id="profilePassword" displayAsPassword="true"/>
+					<mx:TextInput x="10" y="140" width="242" text="{userProfile.firstname}" id="profileFirstName"/>
+					<mx:TextInput x="10" y="410" width="242" id="profileConfirmPassword" displayAsPassword="true"/>
+					<mx:TextInput x="10" y="278" width="242" text="{userProfile.email}" id="profileEmail"/>
+					<mx:TextInput x="10" y="196" width="242" text="{userProfile.lastname}" id="profileLastName"/>
 					<mx:Button x="89" label="Reset" bottom="10"/>
 					<mx:Button x="180" label="Change!" bottom="10" click="updateUserProfile();"/>
 					<mx:LinkButton x="228" y="106" label="(Get a Gravatar)" 
