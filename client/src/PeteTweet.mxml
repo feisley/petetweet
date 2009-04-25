@@ -147,6 +147,18 @@
 			
 			public function gotLogout(o:Object):void {
 				viewstack1.selectedIndex = 0;
+				myTweets.removeAll();
+				friendTweets.removeAll();
+				searchTweets.removeAll();
+				searchResults.removeAll();
+				sentMessages.removeAll();
+				receivedMessages.removeAll();
+				following.removeAll();
+				userProfile = null;
+				currentProfile = null;
+				appStack.selectedIndex = 0;
+				profileStack.selectedIndex = 0;
+				homeTabs.selectedIndex = 1;
 				gw.call(API_STATUS, new Responder(statusPass, statusFail));
 			}
 			
