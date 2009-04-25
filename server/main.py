@@ -20,6 +20,7 @@ def version():
 # Define the API services for PyAMF
 services = {
     'api.version': version,
+    
     'petetweet.register': api.register,
     'petetweet.login': api.login,
     'petetweet.logout': api.logout,
@@ -32,7 +33,11 @@ services = {
     'petetweet.getalltweets': api.getalltweets,
     'petetweet.getfollowedtweets': api.getfollowedtweets,
     
+    'petetweet.sendmessage': api.sendMessage,
+    'petetweet.getmessages': api.getMessages,
+    
     'petetweet.search': api.search,
+    
     'petetweet.profile': api.getMyProfile,
     'petetweet.updateprofile': api.updateMyProfile,
     'petetweet.getprofile': api.getProfile,

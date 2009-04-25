@@ -285,5 +285,7 @@ def following():
     q = Follow.all()
     q.filter("follower =", me)
     
-    return q.fetch(1000)
+    f = q.fetch(1000)
+    
+    return [x.followee for x in f]
     
