@@ -148,6 +148,7 @@ def sendMessage(userid, message):
     m = Message(sender=me, recipient=them, text=message)
     
     m.save()
+    return "Successfully Sent Message"
 
 def getSentMessages(limit = 10):
     
