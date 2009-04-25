@@ -215,6 +215,7 @@
             
             private function gotUserTweets(arr:Array):void {
             	searchTweets = new ArrayCollection(arr);
+            	profileStack.selectedIndex = 1;
             }
             
             private function gotText(evt:TextEvent):void {
@@ -285,7 +286,7 @@
 							<mx:DataGridColumn headerText="Last Name" dataField="lastname"/>
 						</mx:columns>
 					</mx:DataGrid>
-					<mx:Button label="View User's Tweets" click="getUserTweets();" bottom="10" right="10"/>
+					<mx:Button label="View User's Profile" click="getUserTweets();" bottom="10" right="10"/>
 					<mx:Button label="Clear Results" click="searchResults.removeAll();" bottom="10" left="10"/>
 				</mx:Panel>
 				<mx:TabNavigator bottom="10" top="10" right="10" left="439">
@@ -311,16 +312,26 @@
 							</mx:itemRenderer>
 						</mx:List>
 					</mx:Canvas>
-					<mx:Canvas id="searchTimeline" label="User Timeline" width="100%" height="100%">
-						<mx:List dataProvider="{searchTweets}" variableRowHeight="true" right="0" left="0" top="0" bottom="0">
-							<mx:itemRenderer>
-								<mx:Component>
-									<petetweet:TweetRenderer>
-										
-									</petetweet:TweetRenderer>
-								        	</mx:Component>
-							</mx:itemRenderer>
-						</mx:List>
+					<mx:Canvas id="searchTimeline" label="User Profile" width="100%" height="100%">
+						<mx:ViewStack id="profileStack" right="0" left="0" top="0" bottom="0">
+							<mx:Canvas label="Profile Alert" width="100%" height="100%">
+								<mx:Panel width="374" height="130" layout="absolute" horizontalCenter="0" verticalCenter="0" title="User Profiles">
+									<mx:Text width="334" color="#000000"
+									    text="This is the PeteTweet profile viewer.&#xa;&#xa;Please use the search form to the left to search for a user to view." id="text1" x="10" y="10" height="63" fontWeight="normal"/>
+								</mx:Panel>
+							</mx:Canvas>
+							<mx:Canvas label="User Profile" width="100%" height="100%">
+								<mx:List dataProvider="{searchTweets}" variableRowHeight="true" bottom="0" top="150" right="0" left="0">
+									<mx:itemRenderer>
+										<mx:Component>
+											<petetweet:TweetRenderer>
+												
+											</petetweet:TweetRenderer>
+										        	</mx:Component>
+									</mx:itemRenderer>
+								</mx:List>
+							</mx:Canvas>
+						</mx:ViewStack>
 					</mx:Canvas>
 				</mx:TabNavigator>
 				<mx:Label x="217" y="17" text="Remaining Characters:"/>
