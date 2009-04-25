@@ -34,7 +34,9 @@ services = {
     'petetweet.getfollowedtweets': api.getfollowedtweets,
     
     'petetweet.sendmessage': api.sendMessage,
-    'petetweet.getmessages': api.getMessages,
+    'petetweet.getsentmessages': api.getSentMessages,
+    'petetweet.getreceivedmessages': api.getReceivedMessages,
+
     
     'petetweet.search': api.search,
     

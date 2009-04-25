@@ -16,9 +16,6 @@ class User(db.Model):
     email = db.EmailProperty()
     reg_date = db.DateTimeProperty(auto_now_add=True)
     last_date = db.DateTimeProperty(auto_now_add=True)
-  
-    def __eq__(self, other):
-        return self.key() == other.key()
 
 class Tweet(db.Model):
     user = db.ReferenceProperty(User, collection_name='tweets')

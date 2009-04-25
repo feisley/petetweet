@@ -140,12 +140,35 @@ def getfollowedtweets(limit = 10):
 
 
 def sendMessage(userid, message):
-    pass
-
-def getMessages():
-    pass
     
+    s = Session()
+    me = s['user']
+    them = db.Key(userid)
+    
+    m = Message(sender=me, recipient=them, text=message)
+    
+    m.save()
 
+def getSentMessages(limit = 10):
+    
+    s = Session()
+    me = s['user']
+    
+    q = Message.all()
+    q.filter("sender", me)
+    
+    return q.fetch(limit)
+
+def getReceivedMessages(limit = 10):
+    
+    s = Session()
+    me = s['user']
+    
+    q = Message.all()
+    q.filter("recipient", me)
+    
+    return q.fetch(limit)
+    
 def search(str):
     
     # Check usernames
