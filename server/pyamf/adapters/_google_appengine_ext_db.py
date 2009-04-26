@@ -18,7 +18,6 @@ import datetime
 
 import pyamf
 from pyamf.util import imports
-from pyamf import adapters
 from pyamf.adapters import util
 
 class ModelStub(object):
@@ -110,13 +109,22 @@ class DataStoreClassAlias(pyamf.ClassAlias):
         """
         @since: 0.4
         """
-        sa, da = pyamf.ClassAlias.getAttrs(self, obj)
-
         if not hasattr(self, 'static_attrs'):
-            self.static_attrs = obj.properties().keys() if sa is None else sa
+            self.static_attrs = obj.properties().keys()
             self.static_attrs.insert(0, DataStoreClassAlias.KEY_ATTR)
 
-        dynamic_attrs = obj.dynamic_properties() if da is None else da
+            for k, v in self.klass.__dict__.iteritems():
+                if isinstance(v, property):
+                    self.static_attrs.append(k)
+
+        dynamic_attrs = obj.dynamic_properties()
+
+        for k, v in obj.__dict__.iteritems():
+            if k.startswith('_'):
+                continue
+
+            if k not in self.static_attrs:
+                dynamic_attrs.append(k)
 
         return self.static_attrs, dynamic_attrs
 
@@ -154,7 +162,7 @@ class DataStoreClassAlias(pyamf.ClassAlias):
                         try:
                             static_attrs[a] = gae_objects.getClassKey(klass, key)
                         except KeyError:
-                            ref_obj = loadInstanceFromDatastore(klass, key, codec)
+                            ref_obj = getattr(obj, a)
                             gae_objects.addClassKey(klass, key, ref_obj)
                             static_attrs[a] = ref_obj
 
@@ -227,6 +235,9 @@ class DataStoreClassAlias(pyamf.ClassAlias):
                 # attribute entirely ..
                 if isinstance(kp, db._ReverseReferenceProperty):
                     del attrs[k]
+                elif isinstance(kp, property):
+                    if kp.fset is None:
+                        del attrs[k]
 
         # If the object does not exist in the datastore, we must fire the
         # class constructor. This sets internal attributes that pyamf has

@@ -14,7 +14,7 @@ supports data types that are available only in ActionScript 3.0, such as
 L{ByteArray} and L{ArrayCollection}.
 
 @see: U{Official AMF3 Specification in English (external)
-<http://opensource.adobe.com/wiki/download/attachments/1114283/amf3_spec_121207.pdf>}
+<http://opensource.adobe.com/wiki/download/attachments/1114283/amf3_spec_05_05_08.pdf>}
 @see: U{Official AMF3 Specification in Japanese (external)
 <http://opensource.adobe.com/wiki/download/attachments/1114283/JP_amf3_spec_121207.pdf>}
 @see: U{AMF3 documentation on OSFlash (external)
@@ -1219,7 +1219,7 @@ class Decoder(pyamf.BaseDecoder):
 
         xmlstring = self.stream.read(ref >> 1)
 
-        x = util.ET.XML(xmlstring)
+        x = util.ET.fromstring(xmlstring)
         self.context.addObject(x)
 
         if legacy is True:

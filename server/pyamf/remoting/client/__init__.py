@@ -18,7 +18,7 @@ DEFAULT_CLIENT_TYPE = pyamf.ClientTypes.Flash6
 
 #: Default user agent is C{PyAMF/x.x.x}.
 DEFAULT_USER_AGENT = 'PyAMF/%s' % '.'.join(map(lambda x: str(x),
-                                               pyamf.__version__))
+    pyamf.__version__))
 
 HTTP_OK = 200
 
@@ -293,7 +293,7 @@ class RemotingService(object):
         Returns a L{ServiceProxy} for the supplied name. Sets up an object that
         can have method calls made to it that build the AMF requests.
 
-        @param auto_execute: Default is C{False}.
+        @param auto_execute: Default is C{True}.
         @type auto_execute: C{bool}
         @raise TypeError: C{string} type required for C{name}.
         @rtype: L{ServiceProxy}
@@ -469,10 +469,10 @@ class RemotingService(object):
         self.logger.debug('Content-Length: %s' % content_length)
         self.logger.debug('Server: %s' % http_response.getheader('Server'))
 
-        if content_length is None:
+        if content_length in (None, ''):
             bytes = http_response.read()
         else:
-            bytes = http_response.read(content_length)
+            bytes = http_response.read(int(content_length))
 
         self.logger.debug('Read %d bytes for the response' % len(bytes))
 
