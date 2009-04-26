@@ -76,12 +76,17 @@
 			
 			public function init():void{
 				gw.connect("http://www.petetweet.com/api");
+				gw.addEventListener(NetStatusEvent.NET_STATUS, networkError);
 				
 				gw.call(API_STATUS, new Responder(statusPass, statusFail));
 				gw.call(API_GETALL, new Responder(gotPublicTweets, gotTweetFault));
 				
 				t.addEventListener( TimerEvent.TIMER, poll, false, 0, true );
 				t.start();
+			}
+			
+			public function networkError(e:NetStatusEvent):void {
+				Alert.show("There was an error connecting to the network");
 			}
 			
 			public function poll(event:TimerEvent):void {

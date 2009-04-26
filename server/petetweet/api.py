@@ -5,6 +5,11 @@ from data import *
 import util
 
 import logging
+import pyamf
+
+pyamf.register_class(User, None,
+                     attrs=['_key', 'username', 'firstname', 'lastname',
+                            'email', 'reg_date'])
 
 
 def NotLoggedInError(Exception):
@@ -157,6 +162,7 @@ def getSentMessages(limit = 10):
     
     q = Message.all()
     q.filter("sender", me)
+    q.order("-send_date")
     
     return q.fetch(limit)
 
@@ -167,6 +173,7 @@ def getReceivedMessages(limit = 10):
     
     q = Message.all()
     q.filter("recipient", me)
+    q.order("-send_date")
     
     return q.fetch(limit)
     
