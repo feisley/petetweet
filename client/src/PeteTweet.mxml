@@ -103,11 +103,16 @@
 				friendsList.addEventListener("ViewProfileEvent",viewProfileHandler);
 			}
 			public function tweetReplyHandler(event:TweetReplyEvent):void{
-				tweetEditor.text = "@"+event.username + " ";
-				tweetEditor.textArea.selectionBeginIndex = tweetEditor.textArea.text.length;
-				tweetEditor.textArea.selectionEndIndex = tweetEditor.textArea.text.length;
+				doPublicReply(event.username);
+			}
+			
+			public function doPublicReply(username:String):void {
+				tweetEditor.text = "@"+username + " ";
+				tweetEditor.textArea.selectionBeginIndex = username.length + 2;
+				tweetEditor.textArea.selectionEndIndex = username.length + 2;
 				tweetEditor.textArea.setFocus();
 			}
+			
 			public function messageListInit():void{
 				messageInbox.addEventListener("ReplyEvent",replyHandler);
 			}
@@ -115,16 +120,22 @@
 				followingUsers.addEventListener("UnfollowUserEvent",unfollowUserHandler);
 			}
 			public function replyHandler(event:ReplyEvent):void{
+				gotoMessages(event.username);
+			}
+			
+			public function gotoMessages(username:String):void {
 				for(var i:int = 0;i < following.length; i++){
 					var temp:Object = following.getItemAt(i);
-					if(temp.username == event.username){
+					if(temp.username == username){
 						privMessageList.selectedIndex = i;
 						messageEditor.textArea.setFocus();
+						appStack.selectedIndex = 1;
 						return;
 					}
 				}
 				Alert.show("You must follow this person to reply to them!");
 			}
+			
 			public function unfollowUserHandler(event:UnfollowUserEvent):void{
 				gw.call("petetweet.unfollow", new Responder(gotResponse, gotTweetFault), event.uid);
 				getFriends();
@@ -287,7 +298,7 @@
 				trace("Post Passed");
 				updateTweets();
 				tweetEditor.text = "";
-				updateCount();
+				remainingChars.text = "256";
 				
 			}
 			public function postFail(o:Object):void{
@@ -584,8 +595,8 @@
 								<mx:Image x="10" y="10" width="90" height="90" source="{gravatarUrl(currentProfile.email, 90)}"/>
 								<mx:Label x="108" y="10" text="{currentProfile.username}" fontSize="22" width="262" truncateToFit="true"/>
 								<mx:Button y="20" label="loading..." right="10" enabled="false" id="btn_follow" click="handleFollowClick(currentProfile._key);"/>
-								<mx:Button y="50" label="Private Message" right="10"/>
-								<mx:Button y="78" label="Public Reply" right="10"/>
+								<mx:Button y="50" label="Private Message" right="10" click="gotoMessages(currentProfile.username);"/>
+								<mx:Button y="78" label="Public Reply" right="10" click="doPublicReply(currentProfile.username);"/>
 								<mx:Label x="108" y="50" text="This user has been a memeber since:"/>
 								<mx:Label x="108" y="66" text="{currentProfile.reg_date}" width="216" fontStyle="italic"/>
 							</mx:Canvas>
