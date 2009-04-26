@@ -92,6 +92,8 @@
 			public function poll(event:TimerEvent):void {
 				t.stop()
 				updateTweets();
+				getFriends();
+				getFollowing();
 				
 				t.reset();
 				t.start();
@@ -602,7 +604,7 @@
 								<mx:Button y="20" label="loading..." right="10" enabled="false" id="btn_follow" click="handleFollowClick(currentProfile._key);"/>
 								<mx:Button y="50" label="Private Message" right="10" click="gotoMessages(currentProfile.username);"/>
 								<mx:Button y="78" label="Public Reply" right="10" click="doPublicReply(currentProfile.username);"/>
-								<mx:Label x="108" y="50" text="This user has been a memeber since:"/>
+								<mx:Label x="108" y="50" text="This user has been a member since:"/>
 								<mx:Label x="108" y="66" text="{currentProfile.reg_date}" width="216" fontStyle="italic"/>
 							</mx:Canvas>
 							<mx:Canvas label="Loading Profile" width="100%" height="100%">

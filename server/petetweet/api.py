@@ -45,14 +45,14 @@ def register(username, password, firstname, lastname, email):
     return "Success"
 
 def login(username, password):
-    
+   
     q = User.all()
     q.filter("username =", username)
     user = q.get()
 
     if not user:
         raise ValueError("Invalid username or password")
-
+        
     hash = util.hashPassword(user.salt, password)
     
     if hash == user.password:
